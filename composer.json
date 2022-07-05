@@ -4,12 +4,12 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": ">=8.0.2",
+        "php": ">=8.1",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "doctrine/annotations": "^1.0",
+        "ext-intl": "*",
+        "doctrine/annotations": "^1.13",
         "doctrine/doctrine-bundle": "^2.7",
-        "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.12",
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpstan/phpdoc-parser": "^1.6",
@@ -40,10 +40,11 @@
         "symfony/twig-bundle": "6.0.*",
         "symfony/validator": "6.0.*",
         "symfony/web-link": "6.0.*",
-        "symfony/webpack-encore-bundle": "^1.12",
+        "symfony/webpack-encore-bundle": "^1.14",
         "symfony/yaml": "*",
         "twig/extra-bundle": "^2.12|^3.0",
-        "twig/twig": "^2.12|^3.0"
+        "twig/twig": "^2.12|^3.0",
+        "vich/uploader-bundle": "^1.19"
     },
     "config": {
         "allow-plugins": {
