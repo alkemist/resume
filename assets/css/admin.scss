@@ -1,0 +1,112 @@
+.datagrid td.actions .actions-dropdown .dropdown-menu {
+  min-width: auto;
+
+  a{
+    display: block;
+    text-align: right;
+    margin-right: 10px;
+    margin-top: 10px;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+}
+
+#main {
+  form {
+    .form-group {
+      .select2-container {
+        width: auto !important;
+      }
+    }
+  }
+}
+
+body.list-kitcheningredient {
+  .form-action-search input[type=search].form-control {
+    max-width: 125px
+  }
+  #main {
+    form {
+      .form-group {
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
+  }
+  table {
+    th.ingredient, td.ingredient{
+      width: 130px;
+    }
+    th.measure, td.measure{
+      width: 80px;
+    }
+  }
+}
+body.edit-kitcheningredient, body.new-kitcheningredient {
+  #main {
+    form {
+      &.edit-form, &.new-form {
+        button[type=submit] {
+          width: 112px;
+          overflow: hidden;
+        }
+      }
+    }
+  }
+}
+
+#new-recipe-form, #edit-recipe-form{
+  .form-group {
+    display: block;
+
+    .col-form-label {
+      text-align: left;
+      width: 100px;
+    }
+  }
+
+  .field-ingredients{
+    width: 100%;
+
+    .field-recipe_ingredient{
+      width: 100%;
+      padding-bottom: 0;
+
+      .form-widget-compound{
+        display: inline-block;
+        width: calc(100% - 23px);
+
+        .form-group{
+          display: inline-block;
+          vertical-align: top;
+
+          &.field-easyadmin_autocomplete{
+            width: 200px;
+          }
+
+          &.field-number{
+            width: 85px;
+          }
+
+          &.field-choice{
+            .form-check{
+              display: inline-block;
+              margin-right: 28px;
+            }
+          }
+
+          &.field-text{
+            width: 120px;
+          }
+        }
+      }
+    }
+
+    .field-collection-item-action{
+      top: 25px;
+    }
+  }
+}
+

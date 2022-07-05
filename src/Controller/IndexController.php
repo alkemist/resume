@@ -49,6 +49,7 @@ class IndexController extends AbstractController
             'filename'            => 'jeremy-achain-cv',
             'messageSended'       => $request->get('messageSended')
         ];
+
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
 

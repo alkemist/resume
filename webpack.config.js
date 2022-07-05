@@ -1,4 +1,4 @@
-const Encore = require('@symfony/webpack-encore');
+var Encore = require('@symfony/webpack-encore');
 
 // Manually configure the runtime environment if not already configured yet by the "encore" command.
 // It's useful when you use tools that rely on webpack.config.js file.
@@ -20,7 +20,20 @@ Encore
      * Each entry will result in one JavaScript file (e.g. app.js)
      * and one CSS file (e.g. app.css) if your JavaScript imports CSS.
      */
+    .addEntry('js/html2pdf.bundle', './assets/js/html2pdf.bundle.js')
+    .addEntry('js/app', './assets/js/app.js')
+    .addEntry('js/admin', './assets/js/admin.js')
     .addEntry('app', './assets/app.js')
+    .addEntry('bootstrap', './assets/bootstrap.js')
+
+    .addStyleEntry('css/app', './assets/css/app.scss')
+    .addStyleEntry('css/login', './assets/css/login.scss')
+    .addStyleEntry('css/index', './assets/css/index.scss')
+    .addStyleEntry('css/admin', './assets/css/admin.scss')
+    .addStyleEntry('css/dashboard', './assets/css/dashboard.scss')
+    .addStyleEntry('css/report', './assets/css/report.scss')
+    .addStyleEntry('css/report_pdf', './assets/css/report_pdf.scss')
+    .addStyleEntry('css/timeline', './assets/css/timeline.scss')
 
     // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
     .enableStimulusBridge('./assets/controllers.json')
@@ -56,7 +69,7 @@ Encore
     })
 
     // enables Sass/SCSS support
-    //.enableSassLoader()
+    .enableSassLoader()
 
     // uncomment if you use TypeScript
     //.enableTypeScriptLoader()
@@ -70,6 +83,8 @@ Encore
 
     // uncomment if you're having problems with a jQuery plugin
     //.autoProvidejQuery()
+
+    //.enableVueLoader()
 ;
 
 module.exports = Encore.getWebpackConfig();
