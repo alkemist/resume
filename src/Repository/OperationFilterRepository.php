@@ -2,8 +2,8 @@
 
 namespace App\Repository;
 
-use App\Entity\Operation;
 use App\Entity\OperationFilter;
+use App\Enum\OperationTypeEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -20,7 +20,7 @@ class OperationFilterRepository extends ServiceEntityRepository
         parent::__construct($registry, OperationFilter::class);
     }
 
-    public function getPositiveFilters()
+    public function getPositiveFilters(): array|float|int|string
     {
         $query = $this->createQueryBuilder('o')
             ->select('o.name')
@@ -29,7 +29,7 @@ class OperationFilterRepository extends ServiceEntityRepository
         ;
 
         $query->andWhere($query->expr()->in('o.type', [
-            Operation::TYPE_INCOME, Operation::TYPE_REFUND
+            OperationTypeEnum::Income, OperationTypeEnum::Refund
         ]));
 
         return $query->getQuery()->getScalarResult();
@@ -74,33 +74,4 @@ class OperationFilterRepository extends ServiceEntityRepository
         ;
         return $query->getQuery()->getScalarResult();
     }
-
-    // /**
-    //  * @return OperationFilter[] Returns an array of OperationFilter objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('o')
-            ->andWhere('o.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('o.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?OperationFilter
-    {
-        return $this->createQueryBuilder('o')
-            ->andWhere('o.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }
