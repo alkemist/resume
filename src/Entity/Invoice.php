@@ -11,6 +11,7 @@ use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
 use Stringable;
@@ -33,10 +34,10 @@ class Invoice implements Stringable
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private int $id;
 
-    #[ORM\Column(type: 'string', length: 255, unique: true)]
+    #[ORM\Column(type: Types::STRING, length: 255, unique: true)]
     private ?string $number;
 
     #[ORM\ManyToOne(targetEntity: Company::class, cascade: ['persist'], inversedBy: 'invoices')]
@@ -47,31 +48,31 @@ class Invoice implements Stringable
     #[ORM\JoinColumn(nullable: true)]
     private ?Experience $experience = null;
 
-    #[ORM\Column(type: 'date')]
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
     private DateTimeInterface $createdAt;
 
-    #[ORM\Column(type: 'date', nullable: true)]
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?DateTimeInterface $payedAt = null;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
     private ?string $totalHt = null;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
     private ?string $totalTax = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private string $object;
 
-    #[ORM\Column(type: 'smallint', nullable: true)]
+    #[ORM\Column(type: Types::SMALLINT, nullable: true)]
     private int $tjm;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: Types::STRING, nullable: true, enumType: InvoicePaymentTypeEnum::class)]
     private ?InvoicePaymentTypeEnum $payedBy;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: Types::STRING, nullable: true, enumType: InvoiceStatusEnum::class)]
     private ?InvoiceStatusEnum $status;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $dueInterval;
 
     /**
@@ -83,16 +84,16 @@ class Invoice implements Stringable
     #[ORM\ManyToOne(targetEntity: Period::class, inversedBy: 'invoices')]
     private ?Period $period = null;
 
-    #[ORM\Column(type: 'decimal', precision: 3, scale: 1, nullable: true)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 3, scale: 1, nullable: true)]
     private int $daysCount;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $extraLibelle = null;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
     private ?string $extraHt = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $reference = null;
 
     public function __construct()

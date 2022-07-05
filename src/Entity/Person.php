@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Enum\PersonCivilityEnum;
 use App\Repository\PersonRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Stringable;
 
@@ -12,16 +13,16 @@ class Person implements Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private int $id;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: Types::STRING, nullable: true, enumType: PersonCivilityEnum::class)]
     private ?PersonCivilityEnum $civility = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: Types::STRING, length: 255)]
     private ?string $firstname = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: Types::STRING, length: 255)]
     private ?string $lastname = null;
 
     /**
@@ -34,7 +35,7 @@ class Person implements Stringable
     #[ORM\JoinColumn(nullable: false)]
     private ?Company $company = null;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private ?bool $isInvoicingDefault = null;
 
     /**

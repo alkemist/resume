@@ -6,6 +6,7 @@ use App\Enum\InvoiceStatusEnum;
 use App\Repository\PeriodRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Stringable;
 
@@ -14,7 +15,7 @@ class Period implements Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private int $id;
 
     /**
@@ -26,10 +27,10 @@ class Period implements Stringable
     #[ORM\OneToMany(mappedBy: 'period', targetEntity: Declaration::class)]
     private Collection $declarations;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private ?int $year = null;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
     private ?int $quarter = null;
 
     #[ORM\ManyToOne(targetEntity: Period::class, inversedBy: 'periodsQuarter')]

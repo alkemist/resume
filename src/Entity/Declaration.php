@@ -6,6 +6,7 @@ use App\Enum\DeclarationStatusEnum;
 use App\Enum\DeclarationTypeEnum;
 use App\Repository\DeclarationRepository;
 use DateTimeInterface;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Stringable;
 
@@ -18,25 +19,25 @@ class Declaration implements Stringable
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private int $id;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
     private ?string $revenue = null;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
     private ?string $tax = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: Types::STRING, enumType: DeclarationTypeEnum::class)]
     private ?DeclarationTypeEnum $type = null;
 
     #[ORM\ManyToOne(targetEntity: Period::class, inversedBy: 'declarations')]
     private ?Period $period = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: Types::STRING, nullable: true, enumType: DeclarationStatusEnum::class)]
     private DeclarationStatusEnum $status;
 
-    #[ORM\Column(type: 'date', nullable: true)]
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?DateTimeInterface $payedAt = null;
 
     public function __construct()

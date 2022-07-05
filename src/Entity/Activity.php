@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ActivityRepository;
 use DateTimeInterface;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Stringable;
 
@@ -12,13 +13,13 @@ class Activity implements Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private int $id;
 
-    #[ORM\Column(type: 'date')]
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?DateTimeInterface $date = null;
 
-    #[ORM\Column(type: 'decimal', precision: 3, scale: 1, nullable: true)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 3, scale: 1, nullable: true)]
     private ?string $value = null;
 
     #[ORM\ManyToOne(targetEntity: Company::class, cascade: ['persist'], inversedBy: 'activities')]

@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\ArrayShape;
 use Stringable;
@@ -13,15 +14,15 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, Stringable
 {
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    #[ORM\Column(type: 'string', length: 25, unique: true)]
+    #[ORM\Column(type: Types::STRING, length: 25, unique: true)]
     private string $username;
 
-    #[ORM\Column(type: 'string', length: 254, unique: true)]
+    #[ORM\Column(type: Types::STRING, length: 254, unique: true)]
     #[Assert\NotBlank]
     #[Assert\Email]
     private string $email;
@@ -30,13 +31,13 @@ class User implements UserInterface, Stringable
     #[Assert\Length(max: 250)]
     private string $plainPassword;
 
-    #[ORM\Column(type: 'string', length: 64)]
+    #[ORM\Column(type: Types::STRING, length: 64)]
     private string $password;
 
-    #[ORM\Column(type: 'string', length: 250)]
+    #[ORM\Column(type: Types::STRING, length: 250)]
     private string $salt;
 
-    #[ORM\Column(name: 'is_active', type: 'boolean')]
+    #[ORM\Column(name: 'is_active', type: Types::BOOLEAN)]
     private bool $isActive;
 
     /**
