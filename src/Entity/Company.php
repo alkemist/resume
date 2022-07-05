@@ -4,124 +4,90 @@ namespace App\Entity;
 
 use App\Enum\CompanyTypeEnum;
 use App\Helper\StringHelper;
+use App\Repository\CompanyRepository;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\CompanyRepository")
- * @UniqueEntity("slug")
- */
-class Company
+#[ORM\Entity(repositoryClass: CompanyRepository::class)]
+#[UniqueEntity('slug')]
+class Company implements Stringable
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private ?string $name;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $name = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private ?string $displayName;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $displayName = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, unique=true)
-     */
-    private ?string $slug;
+    #[ORM\Column(type: 'string', length: 255, unique: true)]
+    private ?string $slug = null;
 
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Experience", mappedBy="company", cascade={"persist"})
-     */
-    private ArrayCollection $experiences;
+    #[ORM\OneToMany(mappedBy: 'company', targetEntity: Experience::class, cascade: ['persist'])]
+    private Collection $experiences;
 
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Invoice", mappedBy="company", cascade={"persist"})
-     */
-    private ArrayCollection $invoices;
+    #[ORM\OneToMany(mappedBy: 'company', targetEntity: Invoice::class, cascade: ['persist'])]
+    private Collection $invoices;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private ?string $street;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $street = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private ?string $postalCode;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $postalCode = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private ?string $city;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $city = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private CompanyTypeEnum $type;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private ?string $reference;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $reference = null;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Person", mappedBy="company", cascade={"persist"})
-     * @var ArrayCollection<Person>
+     * @var Collection<Person>
      */
-    private ArrayCollection $persons;
+    #[ORM\OneToMany(mappedBy: 'company', targetEntity: Person::class, cascade: ['persist'])]
+    private Collection $persons;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Activity", mappedBy="company")
-     * @var ArrayCollection<Activity>
+     * @var Collection<Activity>
      */
-    private ArrayCollection $activities;
+    #[ORM\OneToMany(mappedBy: 'company', targetEntity: Activity::class)]
+    private Collection $activities;
+
+    #[ORM\ManyToOne(targetEntity: Company::class, inversedBy: 'clients')]
+    private ?self $contractor = null;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Company", inversedBy="clients")
+     * @var Collection<self>
      */
-    private ?self $contractor;
+    #[ORM\OneToMany(mappedBy: 'contractor', targetEntity: Company::class)]
+    private Collection $clients;
 
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Company", mappedBy="contractor")
-     * @var ArrayCollection<self>
-     */
-    private ArrayCollection $clients;
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $notes = null;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private ?string $notes;
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $tjm = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private ?int $tjm;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $service = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private ?string $service;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $filename = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private ?string $filename;
-
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private DateTime $updatedAt;
 
     /**
@@ -143,9 +109,16 @@ class Company
         return $this->getDisplayName();
     }
 
-    public function getId(): int
+    public function getDisplayName(): ?string
     {
-        return $this->id;
+        return $this->displayName ?: $this->getName();
+    }
+
+    public function setDisplayName(?string $displayName): self
+    {
+        $this->displayName = $displayName;
+
+        return $this;
     }
 
     public function getName(): ?string
@@ -159,6 +132,11 @@ class Company
         $this->setSlug(StringHelper::slugify($name));
 
         return $this;
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
     }
 
     public function getSlug(): ?string
@@ -178,16 +156,22 @@ class Company
         return $this->type;
     }
 
-    public function getTypeName(): ?string
-    {
-        return $this->type->toString();
-    }
-
     public function setType(CompanyTypeEnum $type): self
     {
         $this->type = $type;
 
         return $this;
+    }
+
+    public function getTypeName(): ?string
+    {
+        return $this->type->toString();
+    }
+
+    public function getLastExperience(): ?Experience
+    {
+        $count = count($this->getExperiences());
+        return $count > 1 ? $this->experiences[$count - 1] : null;
     }
 
     /**
@@ -196,15 +180,6 @@ class Company
     public function getExperiences(): Collection
     {
         return $this->experiences;
-    }
-
-    /**
-     * @return Experience|null
-     */
-    public function getLastExperience(): ?Experience
-    {
-        $count = count($this->getExperiences());
-        return $count > 1 ? $this->experiences[$count - 1] : null;
     }
 
     public function addExperience(Experience $experience): self
@@ -249,6 +224,18 @@ class Company
         return $contractors;
     }
 
+    public function getContractor(): ?Company
+    {
+        return $this->contractor;
+    }
+
+    public function setContractor(?self $contractor): self
+    {
+        $this->contractor = $contractor;
+
+        return $this;
+    }
+
     /**
      * @return Collection<Invoice>
      */
@@ -276,18 +263,6 @@ class Company
                 $invoice->setCompany(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getDisplayName(): ?string
-    {
-        return $this->displayName ?: $this->getName();
-    }
-
-    public function setDisplayName(?string $displayName): self
-    {
-        $this->displayName = $displayName;
 
         return $this;
     }
@@ -328,14 +303,6 @@ class Company
         return $this;
     }
 
-    /**
-     * @return Collection<Person>
-     */
-    public function getPersons(): Collection
-    {
-        return $this->persons;
-    }
-
     public function getEmails(): array
     {
         foreach ($this->getPersons() as $person) {
@@ -344,6 +311,14 @@ class Company
             }
         }
         return [];
+    }
+
+    /**
+     * @return Collection<Person>
+     */
+    public function getPersons(): Collection
+    {
+        return $this->persons;
     }
 
     public function addPerson(Person $person): self
@@ -400,24 +375,9 @@ class Company
         return $this;
     }
 
-    /**
-     * @return self|null
-     */
-    public function getContractor(): ?Company
-    {
-        return $this->contractor;
-    }
-
     public function getContractorName(): string
     {
-        return $this->contractor ? (string) $this->contractor : '';
-    }
-
-    public function setContractor(?self $contractor): self
-    {
-        $this->contractor = $contractor;
-
-        return $this;
+        return $this->contractor ? (string)$this->contractor : '';
     }
 
     /**
@@ -519,6 +479,11 @@ class Company
         return $this;
     }
 
+    public function getFile(): File
+    {
+        return $this->file;
+    }
+
     public function setFile(File $file = null): void
     {
         $this->file = $file;
@@ -530,10 +495,5 @@ class Company
             // if 'updatedAt' is not defined in your entity, use another property
             $this->updatedAt = new DateTime('now');
         }
-    }
-
-    public function getFile(): File
-    {
-        return $this->file;
     }
 }

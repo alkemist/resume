@@ -3,53 +3,43 @@
 namespace App\Entity;
 
 use App\Enum\InvoiceStatusEnum;
+use App\Repository\PeriodRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\PeriodRepository")
- */
-class Period
+#[ORM\Entity(repositoryClass: PeriodRepository::class)]
+class Period implements Stringable
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Invoice", mappedBy="period")
-     * @var ArrayCollection<Invoice>
+     * @var Collection<Invoice>
      */
-    private ArrayCollection $invoices;
+    #[ORM\OneToMany(mappedBy: 'period', targetEntity: Invoice::class)]
+    private Collection $invoices;
+
+    #[ORM\OneToMany(mappedBy: 'period', targetEntity: Declaration::class)]
+    private Collection $declarations;
+
+    #[ORM\Column(type: 'integer')]
+    private ?int $year = null;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $quarter = null;
+
+    #[ORM\ManyToOne(targetEntity: Period::class, inversedBy: 'periodsQuarter')]
+    private ?Period $periodYear = null;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Declaration", mappedBy="period")
+     * @var Collection<Period>
      */
-    private $declarations;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private ?int $year;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private ?int $quarter;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Period", inversedBy="periodsQuarter")
-     */
-    private ?Period $periodYear;
-
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Period", mappedBy="periodYear")
-     * @var ArrayCollection<Period>
-     */
-    private ArrayCollection $periodsQuarter;
+    #[ORM\OneToMany(mappedBy: 'periodYear', targetEntity: Period::class)]
+    private Collection $periodsQuarter;
 
     public function __construct()
     {
@@ -63,7 +53,7 @@ class Period
         return $this->id;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         $array = [
             $this->getYear()
@@ -73,6 +63,30 @@ class Period
         }
 
         return implode(' - ', $array);
+    }
+
+    public function getYear(): ?int
+    {
+        return $this->year;
+    }
+
+    public function setYear(int $year): self
+    {
+        $this->year = $year;
+
+        return $this;
+    }
+
+    public function getQuarter(): ?int
+    {
+        return $this->quarter;
+    }
+
+    public function setQuarter(int $quarter): self
+    {
+        $this->quarter = $quarter;
+
+        return $this;
     }
 
     /**
@@ -152,46 +166,10 @@ class Period
         return $this;
     }
 
-    public function getYear(): ?int
-    {
-        return $this->year;
-    }
-
-    public function setYear(int $year): self
-    {
-        $this->year = $year;
-
-        return $this;
-    }
-
-    public function getQuarter(): ?int
-    {
-        return $this->quarter;
-    }
-
-    public function setQuarter(int $quarter): self
-    {
-        $this->quarter = $quarter;
-
-        return $this;
-    }
-
-    public function getPeriodYear(): ?self
-    {
-        return $this->periodYear;
-    }
-
-    public function setPeriodYear(?self $periodYear): self
-    {
-        $this->periodYear = $periodYear;
-
-        return $this;
-    }
-
     /**
-     * @return ArrayCollection<self>
+     * @return Collection<self>
      */
-    public function getPeriodsQuarter(): ArrayCollection
+    public function getPeriodsQuarter(): Collection
     {
         return $this->periodsQuarter;
     }
@@ -215,6 +193,18 @@ class Period
                 $quarter->setPeriodYear(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPeriodYear(): ?self
+    {
+        return $this->periodYear;
+    }
+
+    public function setPeriodYear(?self $periodYear): self
+    {
+        $this->periodYear = $periodYear;
 
         return $this;
     }

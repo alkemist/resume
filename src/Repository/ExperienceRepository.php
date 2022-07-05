@@ -43,7 +43,6 @@ class ExperienceRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param DateTime $date
      * @return Experience[]
      */
     public function findByDate(DateTime $date): array
@@ -52,12 +51,12 @@ class ExperienceRepository extends ServiceEntityRepository
             ->setParameter('date', $date->format('Y-m-d'));
 
         $query->where(':date BETWEEN e.dateBegin AND e.dateEnd')
-        ->orWhere(
-            $query->expr()->andX(
-                $query->expr()->gte( ':date', 'e.dateBegin'),
-                $query->expr()->isNull('e.dateEnd')
-            )
-        );
+            ->orWhere(
+                $query->expr()->andX(
+                    $query->expr()->gte(':date', 'e.dateBegin'),
+                    $query->expr()->isNull('e.dateEnd')
+                )
+            );
 
         return $query
             ->getQuery()

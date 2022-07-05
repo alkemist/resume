@@ -3,6 +3,7 @@
 namespace App\Helper;
 
 use Gumlet\ImageResize;
+use Gumlet\ImageResizeException;
 
 abstract class ImageHelper
 {
@@ -12,7 +13,7 @@ abstract class ImageHelper
      * @param $sizeInBytes
      * @param null $height
      * @return bool
-     * @throws \Gumlet\ImageResizeException
+     * @throws ImageResizeException
      */
     public static function resizeToSize($imagePath, $sizeInBytes, $height = null)
     {

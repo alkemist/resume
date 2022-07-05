@@ -14,6 +14,7 @@ class InvoiceTax extends Constraint
      * Then, use these in your validator class.
      */
     public readonly string $message_empty;
+
     public readonly string $message_fill;
 
     public function __construct(mixed $options = null, array $groups = null, mixed $payload = null)

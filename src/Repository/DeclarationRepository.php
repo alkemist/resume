@@ -40,8 +40,7 @@ class DeclarationRepository extends ServiceEntityRepository
             ->join('d.period', 'p')
             ->setParameter('type', $type)
             ->andWhere('p.year = :year')
-            ->setParameter('year', $year)
-        ;
+            ->setParameter('year', $year);
 
         if ($type === DeclarationTypeEnum::Social) {
             $query->andWhere('p.quarter = :quarter')

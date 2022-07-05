@@ -30,7 +30,7 @@ class AttributeRepository extends ServiceEntityRepository
         $query->where('a.isListable = :isListable')
             ->setParameter('isListable', $isListable);
 
-         return $query->indexBy('a', 'a.' . $attribute)
+        return $query->indexBy('a', 'a.' . $attribute)
             ->orderBy('a.weight', 'DESC')
             ->getQuery()
             ->getResult();

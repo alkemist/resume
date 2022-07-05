@@ -7,12 +7,8 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class ExperienceService
 {
-    private EntityManagerInterface $entityManager;
-
-    public function __construct(
-        EntityManagerInterface $entityManager
-    ) {
-        $this->entityManager = $entityManager;
+    public function __construct(private readonly EntityManagerInterface $entityManager)
+    {
     }
 
     public function update(array $ids): void

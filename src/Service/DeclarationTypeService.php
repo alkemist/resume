@@ -12,11 +12,6 @@ use Exception;
 
 class DeclarationTypeService
 {
-    private EntityManagerInterface $entityManager;
-    private DeclarationRepository $declarationRepository;
-    private PeriodService $periodService;
-    private DeclarationTypeEnum $type;
-
     /**
      * DeclarationTypeService constructor.
      * @param EntityManagerInterface $entityManager
@@ -25,15 +20,95 @@ class DeclarationTypeService
      * @param DeclarationTypeEnum $type
      */
     public function __construct(
-        EntityManagerInterface $entityManager,
-        DeclarationRepository $declarationRepository,
-        PeriodService $periodService,
-        DeclarationTypeEnum $type
+        private readonly EntityManagerInterface $entityManager,
+        private readonly DeclarationRepository  $declarationRepository, private readonly PeriodService $periodService,
+        private readonly DeclarationTypeEnum    $type
     ) {
-        $this->entityManager = $entityManager;
-        $this->declarationRepository = $declarationRepository;
-        $this->periodService = $periodService;
-        $this->type = $type;
+    }
+
+    public function getTotalByYear($year): int|string|null
+    {
+        $declarations = [];
+        $amount = 0;
+
+        $period = $this->periodService->getAnnualyByYear($year);
+        $declaration = $this->declarationRepository->findOneBy([
+                                                                   'type'   => $this->type,
+                                                                   'period' => $period
+                                                               ]);
+        if ($declaration) {
+            $declarations[] = $declaration;
+        }
+
+        if ($this->type === DeclarationTypeEnum::Social) {
+            $periods = $this->periodService->getQuarterlyByYear($year);
+            foreach ($periods as $period) {
+                $declaration = $this->declarationRepository->findOneBy([
+                                                                           'type'   => $this->type,
+                                                                           'period' => $period
+                                                                       ]);
+
+                if ($declaration) {
+                    $declarations[] = $declaration;
+                }
+            }
+        }
+
+        foreach ($declarations as $declaration) {
+            $amount += $declaration->getTax();
+        }
+
+        return $amount;
+    }
+
+    /**
+     * Retourne les dates de début et fin du prochain trimestre de cotisation
+     * @param DateTime|null $date
+     * @throws Exception
+     */
+    public function getNextDueDate(DateTime $date = null): array
+    {
+        $currentDate = $date ?: new DateTime();
+        $dueDates = $this->getDueDatesBy($currentDate);
+
+        foreach ($dueDates as $index => $dueDate) {
+            if ($currentDate < $dueDate[2]) {
+                $dueDate[] = $currentDate >= $dueDate[1] && $currentDate <= $dueDate[2];
+                $dueDate[] = $this->type;
+                return $dueDate;
+            }
+        }
+
+        return [];
+    }
+
+    /**
+     * Récupère les dates courantes de déclarations
+     * @throws Exception
+     */
+    public function getDueDatesBy(DateTime $date): array
+    {
+        $dueDatesMonth = $this->getDueMonth();
+        $dueDates = [];
+
+        foreach ($dueDatesMonth as $index => $dueDateMonth) {
+            $dueDateBegin = new DateTime(
+                $this->getAccountingYear($date) . '-' . ($dueDateMonth < 10 ? '0' : '') . $dueDateMonth . '-01'
+            );
+            if ($index == count($dueDatesMonth) - 1) {
+                $dueDateBegin->add(new DateInterval('P1Y'));
+            }
+
+            $dueDates[] = [
+                $index + 1,
+                clone $dueDateBegin,
+                $dueDateBegin
+                    ->add(new DateInterval('P' . (intval($dueDateBegin->format('t')) - 1) . 'D'))
+                    ->add(new DateInterval('PT23H59M59S'))
+            ];
+        }
+
+        return $dueDates;
     }
 
     public function getDueMonth(): array
@@ -61,64 +136,8 @@ class DeclarationTypeService
 
     }
 
-
-    public function getTotalByYear($year): int|string|null
-    {
-        $declarations = [];
-        $amount = 0;
-
-        $period = $this->periodService->getAnnualyByYear($year);
-        $declaration = $this->declarationRepository->findOneBy([
-            'type' => $this->type,
-            'period' => $period
-        ]);
-        if ($declaration) {
-            $declarations[] = $declaration;
-        }
-
-        if ($this->type === DeclarationTypeEnum::Social) {
-            $periods = $this->periodService->getQuarterlyByYear($year);
-            foreach ($periods as $period) {
-                $declaration = $this->declarationRepository->findOneBy([
-                    'type' => $this->type,
-                    'period' => $period
-                ]);
-
-                if ($declaration) {
-                    $declarations[] = $declaration;
-                }
-            }
-        }
-
-        foreach ($declarations as $declaration) {
-            $amount+= $declaration->getTax();
-        }
-
-        return $amount;
-    }
-
-    /**
-     * Verifie si on est dans un mois de déclaration
-     * @return bool
-     */
-    public function isDueMonth(): bool
-    {
-        $date = new DateTime();
-        $dueDatesMonth = $this->getDueMonth();
-
-        foreach ($dueDatesMonth as $index => $dueDateMonth) {
-            if (intval($date->format('m')) ===  $dueDateMonth) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     /**
      * Retourne l'année comptable
-     * @param DateTime $date
-     * @return int
      */
     public function getAccountingYear(DateTime $date): int
     {
@@ -135,70 +154,18 @@ class DeclarationTypeService
     }
 
     /**
-     * Récupère les dates courantes de déclarations
-     * @param DateTime $date
-     * @return array
-     * @throws Exception
-     */
-    public function getDueDatesBy(DateTime $date): array
-    {
-        $dueDatesMonth = $this->getDueMonth();
-        $dueDates = [];
-
-        foreach ($dueDatesMonth as $index => $dueDateMonth) {
-            $dueDateBegin = new DateTime($this->getAccountingYear($date).'-'.($dueDateMonth < 10 ? '0' : '').$dueDateMonth.'-01');
-            if ($index == count($dueDatesMonth) - 1) {
-                $dueDateBegin->add(new DateInterval('P1Y'));
-            }
-
-            $dueDates[] = [
-                $index + 1,
-                clone $dueDateBegin,
-                $dueDateBegin
-                    ->add(new DateInterval('P'.(intval($dueDateBegin->format('t')) - 1).'D'))
-                    ->add(new DateInterval('PT23H59M59S'))
-            ];
-        }
-
-        return $dueDates;
-    }
-
-    /**
-     * Retourne les dates de début et fin du prochain trimestre de cotisation
-     * @param DateTime|null $date
-     * @return array
-     * @throws Exception
-     */
-    public function getNextDueDate(DateTime $date = null): array
-    {
-        $currentDate = $date ?: new DateTime();
-        $dueDates = $this->getDueDatesBy($currentDate);
-
-        foreach ($dueDates as $index => $dueDate)
-        {
-            if ($currentDate < $dueDate[2]) {
-                $dueDate[] = $currentDate >= $dueDate[1] && $currentDate <= $dueDate[2];
-                $dueDate[] = $this->type;
-                return $dueDate;
-            }
-        }
-
-        return [];
-    }
-
-    /**
      * Récupère la déclaration sociale courante
-     * @param bool $forceCurrent
-     * @return Declaration|null
      * @throws Exception
      */
     public function getDeclarations(bool $forceCurrent = false): ?Declaration
     {
+        $quarterlyPeriod = null;
         if ($this->type === DeclarationTypeEnum::Social) {
-            list ($annualyPeriod, $quarterlyPeriod)
-                = $this->isDueMonth() && !$forceCurrent ? $this->periodService->getPreviousPeriod() : $this->periodService->getCurrentPeriod();
+            [$annualyPeriod, $quarterlyPeriod]
+                = $this->isDueMonth() && !$forceCurrent ? $this->periodService->getPreviousPeriod(
+            ) : $this->periodService->getCurrentPeriod();
         } else {
-            list ($annualyPeriod) = $this->periodService->getCurrentPeriod();
+            [$annualyPeriod] = $this->periodService->getCurrentPeriod();
         }
 
         if ($this->type === DeclarationTypeEnum::Social) {
@@ -229,5 +196,22 @@ class DeclarationTypeService
         $this->entityManager->flush();
 
         return $declaration;
+    }
+
+    /**
+     * Verifie si on est dans un mois de déclaration
+     */
+    public function isDueMonth(): bool
+    {
+        $date = new DateTime();
+        $dueDatesMonth = $this->getDueMonth();
+
+        foreach ($dueDatesMonth as $index => $dueDateMonth) {
+            if (intval($date->format('m')) === $dueDateMonth) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

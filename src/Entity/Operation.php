@@ -8,53 +8,35 @@ use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
-/**
- * @UniqueEntity(fields={"date", "name", "amount"}, message="Operation already exists")
- * @ORM\Entity(repositoryClass=OperationRepository::class)
- */
+#[UniqueEntity(fields: ['date', 'name', 'amount'], message: 'Operation already exists')]
+#[ORM\Entity(repositoryClass: OperationRepository::class)]
 class Operation
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
-    /**
-     * @ORM\Column(type="date")
-     */
-    private ?DateTimeInterface $date;
+    #[ORM\Column(type: 'date')]
+    private ?DateTimeInterface $date = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private ?string $name;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $name = null;
 
-    /**
-     * @ORM\Column(type="decimal", precision=10, scale=2)
-     */
-    private ?string $amount;
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    private ?string $amount = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private ?OperationTypeEnum $type;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?OperationTypeEnum $type = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private ?string $target;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $target = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private ?string $label;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $label = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private ?string $location;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $location = null;
 
     public function __construct()
     {
@@ -107,16 +89,16 @@ class Operation
         return $this->type;
     }
 
-    public function getTypeName(): ?string
-    {
-        return $this->type->toString();
-    }
-
     public function setType(?OperationTypeEnum $type): self
     {
         $this->type = $type;
 
         return $this;
+    }
+
+    public function getTypeName(): ?string
+    {
+        return $this->type->toString();
     }
 
     public function getTarget(): ?string

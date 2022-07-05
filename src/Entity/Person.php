@@ -3,55 +3,44 @@
 namespace App\Entity;
 
 use App\Enum\PersonCivilityEnum;
+use App\Repository\PersonRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\PersonRepository")
- */
-class Person
+#[ORM\Entity(repositoryClass: PersonRepository::class)]
+class Person implements Stringable
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private ?PersonCivilityEnum $civility;
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private ?string $firstname;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?PersonCivilityEnum $civility = null;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $firstname = null;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $lastname = null;
 
     /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private ?string $lastname;
-
-    /**
-     * @ORM\Column(type="simple_array", nullable=true)
      * @var string[]
      */
+    #[ORM\Column(type: 'simple_array', nullable: true)]
     private array $phones = [];
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Company", inversedBy="persons", cascade={"persist"})
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private ?Company $company;
+    #[ORM\ManyToOne(targetEntity: Company::class, cascade: ['persist'], inversedBy: 'persons')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Company $company = null;
+
+    #[ORM\Column(type: 'boolean')]
+    private ?bool $isInvoicingDefault = null;
 
     /**
-     * @ORM\Column(type="boolean")
-     */
-    private ?bool $isInvoicingDefault;
-
-    /**
-     * @ORM\Column(type="simple_array", nullable=true)
      * @var string[]
      */
+    #[ORM\Column(type: 'simple_array', nullable: true)]
     private array $emails = [];
 
     public function __toString(): string
@@ -59,26 +48,9 @@ class Person
         return $this->getCivilityName() . ' ' . $this->getFirstname() . ' ' . $this->getLastname();
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getCivility(): ?PersonCivilityEnum
-    {
-        return $this->civility;
-    }
-
     public function getCivilityName(): string
     {
         return $this->civility->toString();
-    }
-
-    public function setCivility(?PersonCivilityEnum $civility): self
-    {
-        $this->civility = $civility;
-
-        return $this;
     }
 
     public function getFirstname(): ?string
@@ -101,6 +73,23 @@ class Person
     public function setLastname(string $lastname): self
     {
         $this->lastname = $lastname;
+
+        return $this;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getCivility(): ?PersonCivilityEnum
+    {
+        return $this->civility;
+    }
+
+    public function setCivility(?PersonCivilityEnum $civility): self
+    {
+        $this->civility = $civility;
 
         return $this;
     }

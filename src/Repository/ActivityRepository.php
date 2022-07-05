@@ -22,7 +22,6 @@ class ActivityRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param DateTimeInterface $date
      * @return Activity[]
      */
     public function findByDate(DateTimeInterface $date): array
@@ -32,13 +31,10 @@ class ActivityRepository extends ServiceEntityRepository
             ->andWhere('a.value > 0')
             ->setParameter('date', $date->format('Ym'))
             ->getQuery()
-            ->getResult()
-            ;
+            ->getResult();
     }
 
     /**
-     * @param Company $company
-     * @param DateTimeInterface $date
      * @return array<Activity>|null
      */
     public function findByCompanyAndDate(Company $company, DateTimeInterface $date): ?array
@@ -50,13 +46,9 @@ class ActivityRepository extends ServiceEntityRepository
             ->setParameter('company', $company)
             ->setParameter('date', $date->format('Ym'))
             ->getQuery()
-            ->getResult()
-            ;
+            ->getResult();
     }
 
-    /**
-     * @param DateTimeInterface $date
-     */
     public function cleanByDate(DateTimeInterface $date): void
     {
         $this->createQueryBuilder('a')
@@ -64,7 +56,6 @@ class ActivityRepository extends ServiceEntityRepository
             ->andWhere('ToChar(a.date, \'YYYYMM\') = :date')
             ->setParameter('date', $date->format('Ym'))
             ->getQuery()
-            ->execute()
-            ;
+            ->execute();
     }
 }

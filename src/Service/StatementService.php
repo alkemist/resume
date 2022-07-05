@@ -16,22 +16,12 @@ use Smalot\PdfParser\Parser;
 
 class StatementService
 {
-    private EntityManagerInterface $entityManager;
-    private OperationRepository $operationRepository;
-    private OperationFilterRepository $operationFilterRepository;
-    
-    private string $statementDirectory;
-
     public function __construct(
-        string $statementDirectory,
-        EntityManagerInterface $entityManager,
-        OperationRepository $operationRepository,
-        OperationFilterRepository $operationFilterRepository
+        private readonly string                    $statementDirectory,
+        private readonly EntityManagerInterface    $entityManager,
+        private readonly OperationRepository       $operationRepository,
+        private readonly OperationFilterRepository $operationFilterRepository
     ) {
-        $this->entityManager = $entityManager;
-        $this->operationRepository = $operationRepository;
-        $this->operationFilterRepository = $operationFilterRepository;
-        $this->statementDirectory = $statementDirectory;
     }
 
     /**
@@ -81,7 +71,9 @@ class StatementService
                 $extractOperations = $index + 1;
             } elseif (strpos($line, 'SOLDE CREDITEUR ') > -1) {
                 $lineArray = explode("\t", $line);
-                $amount = StringHelper::extractAmount(str_starts_with($line, 'SOLDE CREDITEUR ') ? $lineArray[1] : $lineArray[2]);
+                $amount = StringHelper::extractAmount(
+                    str_starts_with($line, 'SOLDE CREDITEUR ') ? $lineArray[1] : $lineArray[2]
+                );
 
                 if ($startAmount && !$endAmount) {
                     $endAmount = $amount;
@@ -106,11 +98,11 @@ class StatementService
             $isPositiv = false;
             $log = $date->format('Ymd') . ' ' . $name . ' ' . $amount;
 
-            if  (StringHelper::contains($name, $positiveFilters) === true) {
+            if (StringHelper::contains($name, $positiveFilters) === true) {
                 $isPositiv = true;
             } else {
                 foreach ($positiveExceptionFilters as $exception) {
-                    if (strpos($name, $exception['name']) > -1
+                    if (strpos($name, (string)$exception['name']) > -1
                         && $date->format('d/m/Y') === $exception['date']->format('d/m/Y')
                         && $amount == floatval($exception['amount'])
                         && !in_array($log, $history)) {
@@ -168,7 +160,7 @@ class StatementService
         if (
             preg_match('#PAIEMENT\s+(PSC|CB)\s+[\d\s]+\s+([A-Za-z\s]*)\s+-#', $operation->getName(), $matches)
             && count($matches) == 3) {
-            $operation->setLocation(trim(str_replace('FR ', '', $matches[2])));
+            $operation->setLocation(trim(str_replace('FR ', '', (string)$matches[2])));
         }
         if (!$operation->getLabel()) {
             $operation->setLabel(trim(str_replace('CARTE 12946058', '', $operation->getName())));

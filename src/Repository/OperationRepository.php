@@ -32,7 +32,8 @@ class OperationRepository extends ServiceEntityRepository
     /**
      * @throws NonUniqueResultException
      */
-    public function findDateNameAmount($date, $name, $amount) {
+    public function findDateNameAmount($date, $name, $amount)
+    {
         return $this->createQueryBuilder('o')
             ->andWhere('o.date = :date')
             ->andWhere('o.name = :name')
@@ -41,11 +42,11 @@ class OperationRepository extends ServiceEntityRepository
             ->setParameter('name', $name)
             ->setParameter('amount', $amount)
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getOneOrNullResult();
     }
 
-    public function getTotalsByMonthAndType($year = null, $type = null) {
+    public function getTotalsByMonthAndType($year = null, $type = null)
+    {
         $query = $this->createQueryBuilder('o')
             ->select('SUM(o.amount) total')
             ->addSelect('o.type')
@@ -53,8 +54,7 @@ class OperationRepository extends ServiceEntityRepository
             ->where('o.type != :hidden')->setParameter('hidden', OperationTypeEnum::Hidden)
             ->orderBy('date', 'asc')
             ->addGroupBy('date')
-            ->addGroupBy('o.type')
-        ;
+            ->addGroupBy('o.type');
 
         if (!$type) {
             $query->andWhere('o.type != :other')->setParameter('other', OperationTypeEnum::Other);
@@ -71,7 +71,8 @@ class OperationRepository extends ServiceEntityRepository
         return $query->getQuery()->getResult();
     }
 
-    public function getTotalsByMonthAndLabel($year = null, $type = null) {
+    public function getTotalsByMonthAndLabel($year = null, $type = null)
+    {
         $query = $this->createQueryBuilder('o')
             ->select('SUM(o.amount) total')
             ->addSelect('o.label')
@@ -79,8 +80,7 @@ class OperationRepository extends ServiceEntityRepository
             ->where('o.type != :hidden')->setParameter('hidden', OperationTypeEnum::Hidden)
             ->orderBy('date', 'asc')
             ->addGroupBy('date')
-            ->addGroupBy('o.label')
-        ;
+            ->addGroupBy('o.label');
 
         if ($year) {
             $query->andWhere('ToChar(o.date, \'YYYY\') = :year')->setParameter('year', $year);

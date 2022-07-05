@@ -6,8 +6,6 @@ abstract class StringHelper
 {
     /**
      * Crée un slug
-     * @param string $text
-     * @return string
      */
     public static function slugify(string $text): string
     {
@@ -16,7 +14,7 @@ abstract class StringHelper
         // transliterate
         $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
         // remove unwanted characters
-        $text = preg_replace('~[^-\w]+~', '', $text);
+        $text = preg_replace('~[^\\-\w]+~', '', $text);
         // trim
         $text = trim($text, '-');
         // remove duplicate -
@@ -27,8 +25,6 @@ abstract class StringHelper
 
     /**
      * Supprime tout les caractères spéciaux
-     * @param string $str
-     * @return string
      */
     public static function clean(string $str): string
     {
@@ -39,8 +35,6 @@ abstract class StringHelper
 
     /**
      * Supprime tout les espaces
-     * @param string $str
-     * @return string
      */
     public static function removeSpaces(string $str): string
     {
@@ -49,8 +43,6 @@ abstract class StringHelper
 
     /**
      * Supprime tout les accents
-     * @param string $stripAccents
-     * @return string
      */
     public static function stripAccents(string $stripAccents): string
     {
@@ -63,8 +55,6 @@ abstract class StringHelper
 
     /**
      * Encode pour les PDF
-     * @param string|null $string
-     * @return string
      */
     public static function encode(?string $string): string
     {
@@ -84,16 +74,13 @@ abstract class StringHelper
     }
 
     /**
-     * @param string $string
      * @param string[] $search
-     * @param bool $caseInsensitive
-     * @return bool
      */
     public static function contains(string $string, array $search, bool $caseInsensitive = false): bool
     {
         $exp = '#'
             . implode('|', $search)
             . ($caseInsensitive ? '#i' : '#');
-        return (bool) preg_match($exp, $string);
+        return (bool)preg_match($exp, $string);
     }
 }

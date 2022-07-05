@@ -13,20 +13,19 @@ use Exception;
 
 class DeclarationService
 {
-    private EntityManagerInterface $entityManager;
     public DeclarationTypeService $declarationTypeSocial;
+
     public DeclarationTypeService $declarationTypeImpot;
+
     public DeclarationTypeService $declarationTypeTva;
+
     public DeclarationTypeService $declarationTypeCfe;
 
     public function __construct(
-        EntityManagerInterface $entityManager,
-        DeclarationRepository $declarationRepository,
-        PeriodService $periodService,
-    )
-    {
-        $this->entityManager = $entityManager;
-
+        private readonly EntityManagerInterface $entityManager,
+        DeclarationRepository                   $declarationRepository,
+        PeriodService                           $periodService,
+    ) {
         $this->declarationTypeSocial = new DeclarationTypeService(
             $entityManager,
             $declarationRepository,
@@ -57,43 +56,7 @@ class DeclarationService
     }
 
     /**
-     * @return array
-     * @throws Exception
-     */
-    public function getNextDueDate(): array
-    {
-        $dueDates = [];
-        $socialDueDates = $this->declarationTypeSocial->getNextDueDate();
-        if (count($socialDueDates) > 0) {
-            $dueDates[] = $socialDueDates;
-        }
-        $impotDueDates = $this->declarationTypeImpot->getNextDueDate();
-        if (count($impotDueDates) > 0) {
-            $dueDates[] = $impotDueDates;
-        }
-        $tvaDueDates = $this->declarationTypeTva->getNextDueDate();
-        if (count($tvaDueDates) > 0) {
-            $dueDates[] = $tvaDueDates;
-        }
-        $cfeDueDates = $this->declarationTypeCfe->getNextDueDate();
-        if (count($cfeDueDates) > 0) {
-            $dueDates[] = $cfeDueDates;
-        }
-
-        /** @var DateTime[] $dueDate */
-        $firstDueDate = null;
-        foreach ($dueDates as $dueDate) {
-            if (!$firstDueDate || $firstDueDate[2]->diff($dueDate[2])->invert) {
-                $firstDueDate = $dueDate;
-            }
-        }
-
-        return $firstDueDate;
-    }
-
-    /**
      * Calcule le montant d'une déclaration
-     * @param Declaration $declaration
      */
     public function calculate(Declaration $declaration): void
     {
@@ -128,7 +91,8 @@ class DeclarationService
 
         switch ($declaration->getType()) {
             case DeclarationTypeEnum::Social:
-                $declaration->setTax($revenues *
+                $declaration->setTax(
+                    $revenues *
                     (Declaration::SOCIAL_NON_COMMERCIALE + Declaration::SOCIAL_CFP)
                 );
                 break;
@@ -161,18 +125,13 @@ class DeclarationService
             /** @var DateTime $socialDueDateBegin */
             /** @var DateTime $socialDueDateEnd */
             /** @var bool $socialDueueDateIsActive */
-            list(
-                $socialDueDate,
-                $socialDueDateBegin,
-                $socialDueDateEnd,
-                $socialDueDateIsActive
-                ) = $nextSocialDueDate;
+            [$socialDueDate, $socialDueDateBegin, $socialDueDateEnd, $socialDueDateIsActive] = $nextSocialDueDate;
 
             $declarationSocial = $this->declarationTypeSocial->getDeclarations();
 
             if ($socialDueDateIsActive && $declarationSocial->getStatus() !== DeclarationStatusEnum::Payed) {
-                $messages[] = 'Déclaration social en cours du T'.$socialDueDate.' à faire entre' .
-                    ' le '. $socialDueDateBegin->format('d/m/Y') . ' et le ' . $socialDueDateEnd->format('d/m/Y');
+                $messages[] = 'Déclaration social en cours du T' . $socialDueDate . ' à faire entre' .
+                    ' le ' . $socialDueDateBegin->format('d/m/Y') . ' et le ' . $socialDueDateEnd->format('d/m/Y');
             }
         }
 
@@ -182,18 +141,13 @@ class DeclarationService
             /** @var DateTime $tvaDueDateBegin */
             /** @var DateTime $tvaDueDateEnd */
             /** @var bool $tvaDueueDateIsActive */
-            list(
-                $tvaDueDate,
-                $tvaDueDateBegin,
-                $tvaDueDateEnd,
-                $tvaDueDateIsActive
-                ) = $nextTvaDueDate;
+            [$tvaDueDate, $tvaDueDateBegin, $tvaDueDateEnd, $tvaDueDateIsActive] = $nextTvaDueDate;
 
             $declarationTva = $this->declarationTypeTva->getDeclarations();
 
             if ($tvaDueDateIsActive && $declarationTva->getStatus() !== DeclarationStatusEnum::Payed) {
                 $messages[] = 'Déclaration TVA en cours à faire entre' .
-                    ' le '. $tvaDueDateBegin->format('d/m/Y') . ' et le ' . $tvaDueDateEnd->format('d/m/Y');
+                    ' le ' . $tvaDueDateBegin->format('d/m/Y') . ' et le ' . $tvaDueDateEnd->format('d/m/Y');
             }
         }
 
@@ -203,18 +157,13 @@ class DeclarationService
             /** @var DateTime $impotDueDateBegin */
             /** @var DateTime $impotDueDateEnd */
             /** @var bool $impotDueueDateIsActive */
-            list(
-                $impotDueDate,
-                $impotDueDateBegin,
-                $impotDueDateEnd,
-                $impotDueDateIsActive
-                ) = $nextImpotDueDate;
+            [$impotDueDate, $impotDueDateBegin, $impotDueDateEnd, $impotDueDateIsActive] = $nextImpotDueDate;
 
             $declarationImpot = $this->declarationTypeImpot->getDeclarations();
 
             if ($impotDueDateIsActive && $declarationImpot->getStatus() !== DeclarationStatusEnum::Payed) {
                 $messages[] = 'Déclaration d\'Impots en cours à faire entre' .
-                    ' le '. $impotDueDateBegin->format('d/m/Y') . ' et le ' . $impotDueDateEnd->format('d/m/Y');
+                    ' le ' . $impotDueDateBegin->format('d/m/Y') . ' et le ' . $impotDueDateEnd->format('d/m/Y');
             }
         }
 
@@ -224,21 +173,50 @@ class DeclarationService
             /** @var DateTime $cfeDueDateBegin */
             /** @var DateTime $cfeDueDateEnd */
             /** @var bool $cfeDueueDateIsActive */
-            list(
-                $cfeDueDate,
-                $cfeDueDateBegin,
-                $cfeDueDateEnd,
-                $cfeDueDateIsActive
-                ) = $nextCfeDueDate;
+            [$cfeDueDate, $cfeDueDateBegin, $cfeDueDateEnd, $cfeDueDateIsActive] = $nextCfeDueDate;
 
             $declarationCfe = $this->declarationTypeCfe->getDeclarations();
 
             if ($cfeDueDateIsActive && $declarationCfe->getStatus() !== DeclarationStatusEnum::Payed) {
                 $messages[] = 'Déclaration de CFE en cours à faire entre' .
-                    ' le '. $cfeDueDateBegin->format('d/m/Y') . ' et le ' . $cfeDueDateEnd->format('d/m/Y');
+                    ' le ' . $cfeDueDateBegin->format('d/m/Y') . ' et le ' . $cfeDueDateEnd->format('d/m/Y');
             }
         }
 
         return $messages;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function getNextDueDate(): array
+    {
+        $dueDates = [];
+        $socialDueDates = $this->declarationTypeSocial->getNextDueDate();
+        if (count($socialDueDates) > 0) {
+            $dueDates[] = $socialDueDates;
+        }
+        $impotDueDates = $this->declarationTypeImpot->getNextDueDate();
+        if (count($impotDueDates) > 0) {
+            $dueDates[] = $impotDueDates;
+        }
+        $tvaDueDates = $this->declarationTypeTva->getNextDueDate();
+        if (count($tvaDueDates) > 0) {
+            $dueDates[] = $tvaDueDates;
+        }
+        $cfeDueDates = $this->declarationTypeCfe->getNextDueDate();
+        if (count($cfeDueDates) > 0) {
+            $dueDates[] = $cfeDueDates;
+        }
+
+        /** @var DateTime[] $dueDate */
+        $firstDueDate = null;
+        foreach ($dueDates as $dueDate) {
+            if (!$firstDueDate || $firstDueDate[2]->diff($dueDate[2])->invert) {
+                $firstDueDate = $dueDate;
+            }
+        }
+
+        return $firstDueDate;
     }
 }

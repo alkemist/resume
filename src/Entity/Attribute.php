@@ -2,45 +2,33 @@
 
 namespace App\Entity;
 
+use App\Repository\AttributeRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\AttributeRepository")
- * @UniqueEntity("slug")
- */
-class Attribute
+#[ORM\Entity(repositoryClass: AttributeRepository::class)]
+#[UniqueEntity('slug')]
+class Attribute implements Stringable
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
-    /**
-     * @ORM\Column(type="string", length=255, unique=true)
-     */
-    private ?string $slug;
+    #[ORM\Column(type: 'string', length: 255, unique: true)]
+    private ?string $slug = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private ?string $icon;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $icon = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private ?string $value;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $value = null;
 
-    /**
-     * @ORM\Column(type="smallint", nullable=true)
-     */
-    private ?int $weight;
+    #[ORM\Column(type: 'smallint', nullable: true)]
+    private ?int $weight = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private bool $isListable;
 
     public function __construct()
@@ -53,11 +41,6 @@ class Attribute
         return $this->getSlug();
     }
 
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
     public function getSlug(): ?string
     {
         return $this->slug;
@@ -68,6 +51,11 @@ class Attribute
         $this->slug = $slug;
 
         return $this;
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
     }
 
     public function getIcon(): ?string

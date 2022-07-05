@@ -2,61 +2,47 @@
 
 namespace App\Entity;
 
+use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\ArrayShape;
+use Stringable;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Table(name="app_users")
- * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
- */
-class User implements UserInterface
+#[ORM\Table(name: 'app_users')]
+#[ORM\Entity(repositoryClass: UserRepository::class)]
+class User implements UserInterface, Stringable
 {
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Column(type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /**
-     * @ORM\Column(type="string", length=25, unique=true)
-     */
+    #[ORM\Column(type: 'string', length: 25, unique: true)]
     private string $username;
 
-    /**
-     * @ORM\Column(type="string", length=254, unique=true)
-     * @Assert\NotBlank()
-     * @Assert\Email()
-     */
+    #[ORM\Column(type: 'string', length: 254, unique: true)]
+    #[Assert\NotBlank]
+    #[Assert\Email]
     private string $email;
 
-    /**
-     * @Assert\NotBlank()
-     * @Assert\Length(max=250)
-     */
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 250)]
     private string $plainPassword;
 
-    /**
-     * @ORM\Column(type="string", length=64)
-     */
+    #[ORM\Column(type: 'string', length: 64)]
     private string $password;
 
-    /**
-     * @ORM\Column(type="string", length=250)
-     */
+    #[ORM\Column(type: 'string', length: 250)]
     private string $salt;
 
-    /**
-     * @ORM\Column(name="is_active", type="boolean")
-     */
+    #[ORM\Column(name: 'is_active', type: 'boolean')]
     private bool $isActive;
 
     /**
-     * @ORM\Column(name="roles", type="array")
      * @var string[]
      */
+    #[ORM\Column(name: 'roles', type: 'array')]
     private array $roles = [];
 
     public function __construct()
@@ -65,9 +51,20 @@ class User implements UserInterface
         $this->salt = md5(uniqid('', true));
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getUsername();
+    }
+
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
+        return $this;
     }
 
     function getId(): int
@@ -83,17 +80,6 @@ class User implements UserInterface
     public function setEmail(string $email): self
     {
         $this->email = $email;
-        return $this;
-    }
-
-    public function getUsername(): string
-    {
-        return $this->username;
-    }
-
-    public function setUsername(string $username): self
-    {
-        $this->username = $username;
         return $this;
     }
 
@@ -167,9 +153,6 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getUserIdentifier(): string
     {
         return $this->username;
@@ -191,7 +174,7 @@ class User implements UserInterface
     public function __serialize(): array
     {
         return [
-            'id' => $this->id,
+            'id'       => $this->id,
             'username' => $this->username,
         ];
     }

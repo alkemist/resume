@@ -2,43 +2,30 @@
 
 namespace App\Entity;
 
+use App\Repository\LinkRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\LinkRepository")
- */
-class Link
+#[ORM\Entity(repositoryClass: LinkRepository::class)]
+class Link implements Stringable
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private ?string $name;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $name = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private ?string $icon;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $icon = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private ?string $url;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $url = null;
 
     public function __toString(): string
     {
         return $this->getName();
-    }
-
-    public function getId(): int
-    {
-        return $this->id;
     }
 
     public function getName(): ?string
@@ -51,6 +38,11 @@ class Link
         $this->name = $name;
 
         return $this;
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
     }
 
     public function getIcon(): ?string

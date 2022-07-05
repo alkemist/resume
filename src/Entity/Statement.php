@@ -11,43 +11,33 @@ use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
- * @UniqueEntity(fields={"filename"}, message="Operation already exists")
- * @ORM\Entity(repositoryClass=StatementRepository::class)
  * @Vich\Uploadable
  */
+#[UniqueEntity(fields: ['filename'], message: 'Operation already exists')]
+#[ORM\Entity(repositoryClass: StatementRepository::class)]
 class Statement
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
-    /**
-     * @ORM\Column(type="date", nullable=true)
-     */
-    private ?DateTimeInterface $date;
+    #[ORM\Column(type: 'date', nullable: true)]
+    private ?DateTimeInterface $date = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, unique=true)
-     */
-    private ?string $filename;
+    #[ORM\Column(type: 'string', length: 255, unique: true)]
+    private ?string $filename = null;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    private ?DateTimeInterface $updatedAt;
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?DateTimeInterface $updatedAt = null;
 
     /**
      * @Vich\UploadableField(mapping="statements", fileNameProperty="filename")
      */
     private File $file;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private ?int $operationsCount;
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $operationsCount = null;
 
     public function getId(): ?int
     {
@@ -78,6 +68,11 @@ class Statement
         return $this;
     }
 
+    public function getFile(): File
+    {
+        return $this->file;
+    }
+
     public function setFile(File $file = null): void
     {
         $this->file = $file;
@@ -89,11 +84,6 @@ class Statement
             // if 'updatedAt' is not defined in your entity, use another property
             $this->updatedAt = new DateTime('now');
         }
-    }
-
-    public function getFile(): File
-    {
-        return $this->file;
     }
 
     public function getOperationsCount(): ?int

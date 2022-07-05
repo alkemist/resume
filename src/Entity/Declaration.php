@@ -4,61 +4,47 @@ namespace App\Entity;
 
 use App\Enum\DeclarationStatusEnum;
 use App\Enum\DeclarationTypeEnum;
+use App\Repository\DeclarationRepository;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\DeclarationRepository")
- */
-class Declaration
+#[ORM\Entity(repositoryClass: DeclarationRepository::class)]
+class Declaration implements Stringable
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
+    final const SOCIAL_NON_COMMERCIALE = 0.22;
+    final const SOCIAL_CFP = 0.002;
+    final const IMPOT_ABATTEMENT = 0.34;
+
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
-    /**
-     * @ORM\Column(type="decimal", precision=10, scale=2, nullable=true)
-     */
-    private ?string $revenue;
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
+    private ?string $revenue = null;
 
-    /**
-     * @ORM\Column(type="decimal", precision=10, scale=2, nullable=true)
-     */
-    private ?string $tax;
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
+    private ?string $tax = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private ?DeclarationTypeEnum $type;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?DeclarationTypeEnum $type = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Period", inversedBy="declarations")
-     */
-    private ?Period $period;
+    #[ORM\ManyToOne(targetEntity: Period::class, inversedBy: 'declarations')]
+    private ?Period $period = null;
 
-    const SOCIAL_NON_COMMERCIALE = 0.22;
-    const SOCIAL_CFP = 0.002;
-    const IMPOT_ABATTEMENT = 0.34;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true))
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private DeclarationStatusEnum $status;
 
-    /**
-     * @ORM\Column(type="date", nullable=true)
-     */
-    private ?DateTimeInterface $payedAt;
+    #[ORM\Column(type: 'date', nullable: true)]
+    private ?DateTimeInterface $payedAt = null;
 
     public function __construct()
     {
         $this->setStatus(DeclarationStatusEnum::Waiting);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         $str = ucfirst($this->getType()->toString()) . ' ';
         $period = $this->getPeriod();
@@ -73,9 +59,40 @@ class Declaration
         return $str;
     }
 
+    public function getType(): ?DeclarationTypeEnum
+    {
+        return $this->type;
+    }
+
+    public function setType(DeclarationTypeEnum $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getPeriod(): ?Period
+    {
+        return $this->period;
+    }
+
+    public function setPeriod(?Period $period): self
+    {
+        $this->period = $period;
+
+        return $this;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getRate(): float
+    {
+        return $this->getRevenue() > 0
+            ? round($this->getTax() * 100 / $this->getRevenue(), 2)
+            : 0;
     }
 
     public function getRevenue(): ?string
@@ -102,40 +119,9 @@ class Declaration
         return $this;
     }
 
-    public function getRate(): float
-    {
-        return $this->getRevenue() > 0
-            ? round($this->getTax() * 100 / $this->getRevenue(), 2)
-            : 0;
-    }
-
-    public function getType(): ?DeclarationTypeEnum
-    {
-        return $this->type;
-    }
-
     public function getTypeName(): ?string
     {
         return $this->type->toString();
-    }
-
-    public function setType(DeclarationTypeEnum $type): self
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    public function getPeriod(): ?Period
-    {
-        return $this->period;
-    }
-
-    public function setPeriod(?Period $period): self
-    {
-        $this->period = $period;
-
-        return $this;
     }
 
     public function getStatus(): ?DeclarationStatusEnum
@@ -143,16 +129,16 @@ class Declaration
         return $this->status;
     }
 
-    public function getStatusName(): ?string
-    {
-        return $this->status->toString();
-    }
-
     public function setStatus(DeclarationStatusEnum $status): self
     {
         $this->status = $status;
 
         return $this;
+    }
+
+    public function getStatusName(): ?string
+    {
+        return $this->status->toString();
     }
 
     public function getPayedAt(): ?DateTimeInterface
@@ -189,24 +175,4 @@ class Declaration
 
         return $period->getPayedInvoices();
     }
-
-    /**
-    public function getPurchases(): array
-    {
-        if ($this->getType() !== DeclarationTypeEnum::TVA) {
-            return [];
-        }
-
-        $period = $this->getPeriod();
-        if (!$period) {
-            return [];
-        }
-
-        return $period->getPurchases()->toArray();
-    }
-
-    public function setInvoices(?array $invoices): array
-    {
-        return $this;
-    }*/
 }

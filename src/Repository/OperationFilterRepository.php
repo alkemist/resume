@@ -25,12 +25,13 @@ class OperationFilterRepository extends ServiceEntityRepository
         $query = $this->createQueryBuilder('o')
             ->select('o.name')
             ->andWhere('o.amount IS NULL')
-            ->andWhere('o.date IS NULL')
-        ;
+            ->andWhere('o.date IS NULL');
 
-        $query->andWhere($query->expr()->in('o.type', [
-            OperationTypeEnum::Income, OperationTypeEnum::Refund
-        ]));
+        $query->andWhere(
+            $query->expr()->in('o.type', [
+                OperationTypeEnum::Income, OperationTypeEnum::Refund
+            ])
+        );
 
         return $query->getQuery()->getScalarResult();
     }
@@ -42,8 +43,7 @@ class OperationFilterRepository extends ServiceEntityRepository
             ->addSelect('o.date')
             ->addSelect('o.amount')
             ->andWhere('o.amount IS NOT NULL')
-            ->andWhere('o.date IS NOT NULL')
-        ;
+            ->andWhere('o.date IS NOT NULL');
 
         return $query->getQuery()->getResult();
     }
@@ -56,8 +56,7 @@ class OperationFilterRepository extends ServiceEntityRepository
             ->addSelect('o.target')
             ->addSelect('o.label')
             ->andWhere('o.amount IS NULL')
-            ->andWhere('o.date IS NULL')
-        ;
+            ->andWhere('o.date IS NULL');
 
         return $query->getQuery()->getResult();
     }
@@ -70,8 +69,7 @@ class OperationFilterRepository extends ServiceEntityRepository
             ->distinct()
             ->andWhere('o.label IS NOT NULL')
             ->andWhere('o.label != :empty')
-            ->setParameter('empty', '')
-        ;
+            ->setParameter('empty', '');
         return $query->getQuery()->getScalarResult();
     }
 }

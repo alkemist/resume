@@ -4,69 +4,51 @@ namespace App\Entity;
 
 use App\Enum\SkillTypeEnum;
 use App\Helper\StringHelper;
+use App\Repository\SkillRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\SkillRepository")
- * @UniqueEntity("slug")
- */
-class Skill
+#[ORM\Entity(repositoryClass: SkillRepository::class)]
+#[UniqueEntity('slug')]
+class Skill implements Stringable
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer", nullable=false)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     */
+    #[ORM\Column(type: Types::INTEGER, nullable: false)]
+    #[ORM\Id, ORM\GeneratedValue(strategy: 'IDENTITY')]
     private int $id;
 
-    /**
-     * @ORM\Column(name="name", type="string", length=100, nullable=false)
-     */
+    #[ORM\Column(type: Types::STRING, length: 100, nullable: false)]
     private string $name;
 
-    /**
-     * @ORM\Column(type="string", length=255, unique=true)
-     */
-    private ?string $slug;
+    #[ORM\Column(type: Types::STRING, length: 255, unique: true)]
+    private ?string $slug = null;
 
-    /**
-     * @ORM\Column(name="type", type="string")
-     */
+    #[ORM\Column(type: Types::STRING, enumType: SkillTypeEnum::class)]
     private SkillTypeEnum $type;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="level", type="integer", nullable=true)
-     */
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
     private int $level;
 
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="on_homepage", type="boolean", nullable=false)
-     */
+    #[ORM\Column(name: 'on_homepage', type: Types::BOOLEAN, nullable: false)]
     private bool $onHomepage;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Experience", mappedBy="skills", cascade={"persist"})
-     * @var ArrayCollection<Experience>
+     * @var Collection<Experience>
      */
-    private ArrayCollection $experiences;
+    #[ORM\ManyToMany(targetEntity: Experience::class, mappedBy: 'skills', cascade: ['persist'])]
+    private Collection $experiences;
+
+    #[ORM\ManyToOne(targetEntity: Skill::class, inversedBy: 'children')]
+    private ?Skill $parent = null;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Skill", inversedBy="children")
+     * @var Collection<Skill>
      */
-    private ?Skill $parent;
-
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Skill", mappedBy="parent")
-     */
-    private ArrayCollection $children;
+    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: Skill::class)]
+    private Collection $children;
 
     public function __construct()
     {
@@ -80,11 +62,6 @@ class Skill
         return $this->getName();
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
     public function getName(): ?string
     {
         return $this->name;
@@ -96,6 +73,11 @@ class Skill
         $this->setSlug(StringHelper::slugify($name));
 
         return $this;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 
     public function getSlug(): ?string
@@ -115,16 +97,16 @@ class Skill
         return $this->type;
     }
 
-    public function getTypeName(): string
-    {
-        return $this->type->toString();
-    }
-
     public function setType(?SkillTypeEnum $type): self
     {
         $this->type = $type;
 
         return $this;
+    }
+
+    public function getTypeName(): string
+    {
+        return $this->type->toString();
     }
 
     public function getLevel(): ?int
@@ -152,9 +134,9 @@ class Skill
     }
 
     /**
-     * @return ArrayCollection<Experience>
+     * @return Collection<Experience>
      */
-    public function getExperiences(): ArrayCollection
+    public function getExperiences(): Collection
     {
         return $this->experiences;
     }
@@ -179,27 +161,15 @@ class Skill
         return $this;
     }
 
-    public function getParent(): ?self
-    {
-        return $this->parent;
-    }
-
     public function getParentName(): ?string
     {
         return $this->parent?->getName();
     }
 
-    public function setParent(?self $parent): self
-    {
-        $this->parent = $parent;
-
-        return $this;
-    }
-
     /**
-     * @return ArrayCollection<Skill>
+     * @return Collection<Skill>
      */
-    public function getChildren(): ArrayCollection
+    public function getChildren(): Collection
     {
         return $this->children;
     }
@@ -223,6 +193,18 @@ class Skill
                 $child->setParent(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getParent(): ?self
+    {
+        return $this->parent;
+    }
+
+    public function setParent(?self $parent): self
+    {
+        $this->parent = $parent;
 
         return $this;
     }

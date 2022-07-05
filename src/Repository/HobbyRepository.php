@@ -2,7 +2,6 @@
 
 namespace App\Repository;
 
-use App\Entity\Activity;
 use App\Entity\Hobby;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;

@@ -1,7 +1,10 @@
 <?php
+
 namespace App\Enum;
 
-enum OperationTypeEnum: string implements \JsonSerializable
+use JsonSerializable;
+
+enum OperationTypeEnum: string implements JsonSerializable
 {
     case Income = 'income';
     case Refund = 'refund';
@@ -13,9 +16,14 @@ enum OperationTypeEnum: string implements \JsonSerializable
     case Other = 'other';
     case Hidden = 'hidden';
 
+    public function jsonSerialize(): string
+    {
+        return $this->toString();
+    }
+
     public function toString(): string
     {
-        return match($this) {
+        return match ($this) {
             self::Income => 'Income',
             self::Refund => 'Refund',
             self::Supply => 'Supply',
@@ -26,10 +34,5 @@ enum OperationTypeEnum: string implements \JsonSerializable
             self::Other => 'Other',
             self::Hidden => 'Hidden',
         };
-    }
-
-    public function jsonSerialize(): string
-    {
-        return $this->toString();
     }
 }

@@ -10,21 +10,18 @@ class ReportService
 {
     /**
      * Génère le tableau à partir d'un date donné
-     * @param DateTime $currentDate
-     * @param array $activities
      * @param null $company
-     * @return array
      * @throws Exception
      */
     public function generateMonth(DateTime $currentDate, array $activities, $company = null): array
     {
         $activitiesData = [];
 
-        for($i = 1; $i < $currentDate->format('N'); $i++) {
+        for ($i = 1; $i < $currentDate->format('N'); $i++) {
             $activitiesData[] = [
                 'selected' => false,
-                'date' => null,
-                'value' => null
+                'date'     => null,
+                'value'    => null
             ];
         }
 
@@ -34,9 +31,9 @@ class ReportService
 
             $activitiesData[$date] = [
                 'selected' => false,
-                'date' => clone $currentDate,
-                'value' => 1,
-                'company' => $company
+                'date'     => clone $currentDate,
+                'value'    => 1,
+                'company'  => $company
             ];
             $currentDate->add(new DateInterval('P1D'));
         }
@@ -53,12 +50,11 @@ class ReportService
 
         $count = count($activitiesData);
 
-        for($i = $count; $i < ceil($count / 7) * 7; $i++)
-        {
+        for ($i = $count; $i < ceil($count / 7) * 7; $i++) {
             $activitiesData[] = [
                 'selected' => false,
-                'date' => null,
-                'value' => null
+                'date'     => null,
+                'value'    => null
             ];
         }
 
@@ -67,7 +63,6 @@ class ReportService
 
     /**
      * Envoi d'un mail à la fin du mois si une mission est en cours pour penser à envoyer un CRA
-     * @return array
      */
     public function getNotifications(): array
     {

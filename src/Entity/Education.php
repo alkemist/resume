@@ -2,64 +2,43 @@
 
 namespace App\Entity;
 
+use App\Repository\EducationRepository;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\EducationRepository")
- */
-class Education
+#[ORM\Entity(repositoryClass: EducationRepository::class)]
+class Education implements Stringable
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private ?string $name;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $name = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private ?string $school;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $school = null;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private ?string $details;
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $details = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private ?string $location;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $location = null;
 
-    /**
-     * @ORM\Column(type="smallint")
-     */
-    private ?int $level;
+    #[ORM\Column(type: 'smallint')]
+    private ?int $level = null;
 
-    /**
-     * @ORM\Column(type="date")
-     */
-    private ?DateTimeInterface $dateBegin;
+    #[ORM\Column(type: 'date')]
+    private ?DateTimeInterface $dateBegin = null;
 
-    /**
-     * @ORM\Column(type="date")
-     */
-    private ?DateTimeInterface $dateEnd;
+    #[ORM\Column(type: 'date')]
+    private ?DateTimeInterface $dateEnd = null;
 
     public function __toString(): string
     {
         return $this->getName();
-    }
-
-    public function getId(): int
-    {
-        return $this->id;
     }
 
     public function getName(): ?string
@@ -72,6 +51,11 @@ class Education
         $this->name = $name;
 
         return $this;
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
     }
 
     public function getSchool(): ?string

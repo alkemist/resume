@@ -7,48 +7,32 @@ use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
-/**
- * @UniqueEntity(fields={"name", "date", "amount"}, message="A filter with same name already exists")
- * @ORM\Entity(repositoryClass=OperationFilterRepository::class)
- */
+#[UniqueEntity(fields: ['name', 'date', 'amount'], message: 'A filter with same name already exists')]
+#[ORM\Entity(repositoryClass: OperationFilterRepository::class)]
 class OperationFilter
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private ?string $name;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $name = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private ?string $type;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $type = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private ?string $target;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $target = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private ?string $label;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $label = null;
 
-    /**
-     * @ORM\Column(type="date", nullable=true)
-     */
-    private ?DateTimeInterface $date;
+    #[ORM\Column(type: 'date', nullable: true)]
+    private ?DateTimeInterface $date = null;
 
-    /**
-     * @ORM\Column(type="decimal", precision=10, scale=2, nullable=true)
-     */
-    private ?string $amount;
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
+    private ?string $amount = null;
 
     public function getId(): ?int
     {
