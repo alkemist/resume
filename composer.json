@@ -79,6 +79,7 @@
         "symfony/polyfill-php80": "*"
     },
     "scripts": {
+        "server:start": "symfony server:start",
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
