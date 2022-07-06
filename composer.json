@@ -86,6 +86,7 @@
     "scripts": {
         "server:start": "symfony server:start",
         "rector": "vendor/bin/rector process",
+        "crud": "bin/console make:admin:crud",
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd"

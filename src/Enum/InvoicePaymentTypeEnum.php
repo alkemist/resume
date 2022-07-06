@@ -4,8 +4,8 @@ namespace App\Enum;
 
 enum InvoicePaymentTypeEnum: string
 {
-    case Check = 'draft';
-    case Transfert = 'Transfert';
+    case Check = 'check';
+    case Transfert = 'transfert';
 
     public function jsonSerialize(): string
     {
@@ -18,5 +18,12 @@ enum InvoicePaymentTypeEnum: string
             self::Check => 'Check',
             self::Transfert => 'Transfert',
         };
+    }
+
+    public static function choices(): iterable
+    {
+        foreach (self::cases() as $case) {
+            yield $case->value => $case->toString();
+        }
     }
 }

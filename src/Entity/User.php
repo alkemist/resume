@@ -75,7 +75,7 @@ class User implements UserInterface, Stringable, PasswordAuthenticatedUserInterf
         return $this;
     }
 
-    function getEmail(): string
+    public function getEmail(): string
     {
         return $this->email;
     }

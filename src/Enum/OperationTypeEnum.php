@@ -35,4 +35,11 @@ enum OperationTypeEnum: string implements JsonSerializable
             self::Hidden => 'Hidden',
         };
     }
+
+    public static function choices(): iterable
+    {
+        foreach (self::cases() as $case) {
+            yield $case->value => $case->toString();
+        }
+    }
 }

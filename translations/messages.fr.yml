@@ -1,5 +1,7 @@
 Web Developer: Développeur Web
 Return to website: Retour sur le site web
+Logout: Se deconnecter
+Informations: Informations
 
 Attribute: Attribut
 Attributes: Attributs
@@ -77,17 +79,17 @@ Object: Objet
 References: Références
 Reference: Référence
 Total: Total
-Total ht: Total HT
-Total net: Total net
-Total tax: Total TVA
-Total ttc: Total TTC
-Created at: Créé le
-Created at year: Créé l'année
-Created at quarter: Créé le trimestre
-Payed at: Payé le
-Payed at year: Payé l'année
-Payed at quarter: Payé le trimestre
-Payed by: Payé par
+Total Ht: Total HT
+Total Net: Total net
+Total Tax: Total TVA
+Total Ttc: Total TTC
+Created At: Créé le
+Created At year: Créé l'année
+Created At quarter: Créé le trimestre
+Payed At: Payé le
+Payed At year: Payé l'année
+Payed At quarter: Payé le trimestre
+Payed By: Payé par
 Number: Numéro
 Status: Statut
 Draft: Brouillon
@@ -97,16 +99,16 @@ waiting: En attente
 Payed: Encaissé
 payed: Encaissé
 Credit: Avoir
-Days count: Nombre de jours
+Days Count: Jours
 Payment: Paiement
 Pdf: Pdf
 30 days end of month: 30 jours fin du mois
 Validate: Valider
-Due interval: Intervalle de paiement
+Due Interval: Intervalle de paiement
 Calculated: Calculé
 Invoices book: Livre des recettes
-Extra ht: Extra HT
-Extra libelle: Extra libellé
+Extra Ht: Extra HT
+Extra Libelle: Extra libellé
 Extra: Extra
 Update: Mettre à jour
 
@@ -304,3 +306,4 @@ refund: Remboursement
 other: Autre
 hobby: Loisir
 hidden: Caché
+

@@ -23,4 +23,11 @@ enum DeclarationTypeEnum: string
             self::CFE => 'CFE',
         };
     }
+
+    public static function choices(): iterable
+    {
+        foreach (self::cases() as $case) {
+            yield $case->value => $case->toString();
+        }
+    }
 }

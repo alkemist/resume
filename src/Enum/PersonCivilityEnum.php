@@ -19,4 +19,11 @@ enum PersonCivilityEnum: string
             self::Women => 'Mme',
         };
     }
+
+    public static function choices(): iterable
+    {
+        foreach (self::cases() as $case) {
+            yield $case->value => $case->toString();
+        }
+    }
 }

@@ -85,7 +85,7 @@ class Invoice implements Stringable
     private ?Period $period = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 3, scale: 1, nullable: true)]
-    private int $daysCount;
+    private float $daysCount;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $extraLibelle = null;
@@ -242,6 +242,11 @@ class Invoice implements Stringable
         $this->company = $company;
 
         return $this;
+    }
+
+    public function getExperienceCompany(): string
+    {
+        return $this->experience ? $this->getExperience()->getCompany()->getDisplayName() : '';
     }
 
     public function getExperienceName(): string

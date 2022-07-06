@@ -19,4 +19,11 @@ enum DeclarationStatusEnum: string
             self::Payed => 'Payed',
         };
     }
+
+    public static function choices(): iterable
+    {
+        foreach (self::cases() as $case) {
+            yield $case->value => $case->toString();
+        }
+    }
 }
