@@ -7,12 +7,14 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\ArrayShape;
 use Stringable;
+use Symfony\Component\Security\Core\User\EquatableInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Table(name: 'app_users')]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User implements UserInterface, Stringable
+class User implements UserInterface, Stringable, PasswordAuthenticatedUserInterface, EquatableInterface
 {
     #[ORM\Column(type: Types::INTEGER)]
     #[ORM\Id]
@@ -32,7 +34,7 @@ class User implements UserInterface, Stringable
     private string $plainPassword;
 
     #[ORM\Column(type: Types::STRING, length: 64)]
-    private string $password;
+    private ?string $password = null;
 
     #[ORM\Column(type: Types::STRING, length: 250)]
     private string $salt;
@@ -57,6 +59,11 @@ class User implements UserInterface, Stringable
         return $this->getUsername();
     }
 
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
     public function getUsername(): string
     {
         return $this->username;
@@ -66,11 +73,6 @@ class User implements UserInterface, Stringable
     {
         $this->username = $username;
         return $this;
-    }
-
-    function getId(): int
-    {
-        return $this->id;
     }
 
     function getEmail(): string
@@ -95,7 +97,7 @@ class User implements UserInterface, Stringable
         return $this;
     }
 
-    public function getPassword(): string
+    public function getPassword(): ?string
     {
         return $this->password;
     }
@@ -183,6 +185,11 @@ class User implements UserInterface, Stringable
     public function __unserialize(array $data)
     {
         $this->id = $data['id'];
-        $this->username = $data['usernames'];
+        $this->username = $data['username'];
+    }
+
+    public function isEqualTo(UserInterface $user): bool
+    {
+        return $this->id === $user->getId();
     }
 }
