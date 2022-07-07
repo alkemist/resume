@@ -2,8 +2,14 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Company;
+use App\Entity\Declaration;
 use App\Entity\Invoice;
+use App\Entity\Person;
 use App\Entity\User;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
@@ -31,6 +37,13 @@ class DashboardController extends AbstractDashboardController
         ;
     }
 
+    public function configureCrud(): Crud
+    {
+        return parent::configureCrud()
+            ->setFormThemes(['fields/form.html.twig', '@EasyAdmin/crud/form_theme.html.twig'])
+        ;
+    }
+
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToUrl('Return to website', 'fa fa-arrow-left', '/');
@@ -38,15 +51,18 @@ class DashboardController extends AbstractDashboardController
 
         yield MenuItem::section('Invoicing');
         yield MenuItem::linkToCrud('Invoices', 'fa fa-coins', Invoice::class);
+        yield MenuItem::linkToCrud('Declarations', 'fa fa-landmark', Declaration::class);
+        yield MenuItem::linkToCrud('Companies', 'fa fa-building', Company::class);
+        yield MenuItem::linkToCrud('Persons', 'fa fa-users', Person::class);
+    }
 
-        /*yield MenuItem::subMenu('Blog', 'fa fa-article')->setSubItems([
-            MenuItem::linkToCrud('Categories', 'fa fa-tags', Category::class),
-            MenuItem::linkToCrud('Posts', 'fa fa-file-text', BlogPost::class),
-            MenuItem::linkToCrud('Comments', 'fa fa-comment', Comment::class),
-        ]);
-        yield MenuItem::linkToCrud('Add Category', 'fa fa-tags', Category::class)
-            ->setAction('new');*/
-            //;
+    public function configureActions(): Actions
+    {
+        return parent::configureActions()
+            ->add(Crud::PAGE_EDIT, Action::INDEX)
+            ->add(Crud::PAGE_EDIT, Action::DELETE)
+            ->disable(Action::BATCH_DELETE)
+        ;
     }
 
     /**

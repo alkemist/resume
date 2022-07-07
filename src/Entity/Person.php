@@ -6,10 +6,12 @@ use App\Enum\PersonCivilityEnum;
 use App\Repository\PersonRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Internal\LanguageLevelTypeAware;
+use JetBrains\PhpStorm\Internal\TentativeType;
 use Stringable;
 
 #[ORM\Entity(repositoryClass: PersonRepository::class)]
-class Person implements Stringable
+class Person implements Stringable, \ArrayAccess
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -49,9 +51,9 @@ class Person implements Stringable
         return $this->getCivilityName() . ' ' . $this->getFirstname() . ' ' . $this->getLastname();
     }
 
-    public function getCivilityName(): string
+    public function getCivilityName(): ?string
     {
-        return $this->civility->toString();
+        return $this->civility?->toString();
     }
 
     public function getFirstname(): ?string
@@ -141,5 +143,35 @@ class Person implements Stringable
         $this->emails = $emails;
 
         return $this;
+    }
+
+    public function offsetExists(mixed $offset): bool
+    {
+        return in_array($offset, ['firstname', 'lastname']);
+    }
+
+    public function offsetGet(mixed $offset): mixed
+    {
+        return match($offset) {
+            'firstname' => $this->firstname,
+            'lastname' => $this->lastname,
+        };
+    }
+
+    public function offsetSet(mixed $offset, mixed $value): void
+    {
+        switch($offset) {
+            case 'firstname':
+                $this->firstname = $value;
+                break;
+            case 'lastname':
+                $this->lastname = $value;
+                break;
+        }
+    }
+
+    public function offsetUnset(mixed $offset): void
+    {
+        $this->offsetSet($offset, null);
     }
 }

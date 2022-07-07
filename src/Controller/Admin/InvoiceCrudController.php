@@ -18,6 +18,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
+use function Symfony\Component\Translation\t;
 
 class InvoiceCrudController extends AbstractCrudController
 {
@@ -44,14 +45,14 @@ class InvoiceCrudController extends AbstractCrudController
             ->addCssClass('btn-sm btn-success');
 
         $actions
-            ->add(Crud::PAGE_INDEX, $validateAction);
+            ->add(Crud::PAGE_INDEX, $validateAction)
+        ;
 
         return $actions;
     }
 
     public function configureFields(string $pageName): iterable
     {
-
         if (Crud::PAGE_INDEX === $pageName) {
             yield TextField::new('number');
             yield AssociationField::new('company');
@@ -66,13 +67,13 @@ class InvoiceCrudController extends AbstractCrudController
             yield TextField::new('periodName', 'Period');
             yield TextField::new('socialDeclaration', 'Declaration');
 
-        } else if (Crud::PAGE_EDIT === $pageName || Crud::PAGE_NEW === $pageName) {
+        } elseif (Crud::PAGE_EDIT === $pageName || Crud::PAGE_NEW === $pageName) {
             yield FormField::addPanel('Informations');
             yield TextField::new('number')->setColumns(2);
             yield TextField::new('reference')->setColumns(2);
             yield TextField::new('object')->setColumns(4);
-            yield AssociationField::new('company')->setColumns(2)->autocomplete();
-            yield AssociationField::new('experience')->setColumns(2)->autocomplete();
+            yield AssociationField::new('company')->setColumns(2);
+            yield AssociationField::new('experience')->setColumns(2);
 
             yield FormField::addPanel('Invoicing');
             yield NumberField::new('daysCount')->setNumDecimals(1)->setColumns(1);
@@ -94,12 +95,12 @@ class InvoiceCrudController extends AbstractCrudController
                 ->setChoices([...InvoiceStatusEnum::cases()])
                 ->setFormType(EnumType::class)
                 ->setFormTypeOptions(['class' => InvoiceStatusEnum::class]);
-            yield AssociationField::new('period')->setColumns(2)->autocomplete();
+            yield AssociationField::new('period')->setColumns(2);
 
             yield FormField::addPanel('Days');
             yield ArrayField::new('activities')
                 ->setDisabled()
-                ->setLabel('')
+                ->setLabel(false)
                 ->setFormTypeOption('allow_add', false)
                 ->setFormTypeOption('allow_delete', false)
                 ->setColumns(6)

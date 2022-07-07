@@ -42,11 +42,11 @@ Location: Localisation
 Client: Client
 Clients: Clients
 Contractor: Prestataire
-Display name: Nom personnalisé
+Display Name: Nom personnalisé
 Address: Adresse
 Service: Service
 Street: Rue
-Postal code: Code postal
+Postal Code: Code postal
 City: Ville
 Principal: Principal
 Hierarchy: Hierarchie
@@ -66,9 +66,10 @@ Emails: Emails
 Copy email: Email de copie
 Copy email bis: Email de copie
 Phones: Téléphones
+Is Invoicing Default: Gère la facturation
 Is invoicing default: Gère la facturation
-M: M
-Mme: Mme
+Men: M
+Women: Mme
 
 Invoice: Facture
 Invoices: Factures

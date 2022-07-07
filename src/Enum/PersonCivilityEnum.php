@@ -15,8 +15,8 @@ enum PersonCivilityEnum: string
     public function toString(): string
     {
         return match ($this) {
-            self::Men => 'M',
-            self::Women => 'Mme',
+            self::Men => 'Men',
+            self::Women => 'Women',
         };
     }
 

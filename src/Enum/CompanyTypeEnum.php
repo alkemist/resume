@@ -20,7 +20,7 @@ enum CompanyTypeEnum: string implements JsonSerializable
     public function toString(): string
     {
         return match ($this) {
-            self::Client => 'Query',
+            self::Client => 'Client',
             self::Prospect => 'Prospect',
             self::Archive => 'Archive',
             self::ESN => 'ESN',
