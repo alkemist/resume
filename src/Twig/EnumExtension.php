@@ -14,7 +14,7 @@ class EnumExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('enum', [$this, 'createProxy']),
+            new TwigFunction('enum', $this->createProxy(...)),
         ];
     }
 

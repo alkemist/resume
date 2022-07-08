@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\OperationTypeEnum;
 use App\Repository\OperationFilterRepository;
 use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
@@ -20,8 +21,8 @@ class OperationFilter
     #[ORM\Column(type: Types::STRING, length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(type: Types::STRING, length: 255)]
-    private ?string $type = null;
+    #[ORM\Column(type: Types::STRING, nullable: true, enumType: OperationTypeEnum::class)]
+    private ?OperationTypeEnum $type = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $target = null;
@@ -52,16 +53,21 @@ class OperationFilter
         return $this;
     }
 
-    public function getType(): ?string
+    public function getType(): ?OperationTypeEnum
     {
         return $this->type;
     }
 
-    public function setType(string $type): self
+    public function setType(?OperationTypeEnum $type): self
     {
         $this->type = $type;
 
         return $this;
+    }
+
+    public function getTypeName(): ?string
+    {
+        return $this->type->toString();
     }
 
     public function getTarget(): ?string

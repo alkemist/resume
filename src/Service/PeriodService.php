@@ -14,10 +14,7 @@ class PeriodService
     {
     }
 
-    /**
-     * @param $year
-     */
-    public function getAnnualyByYear($year): ?Period
+    public function getAnnualyByYear(int $year): ?Period
     {
         return $this->periodRepository->findOneBy([
                                                       'year' => $year
@@ -25,10 +22,9 @@ class PeriodService
     }
 
     /**
-     * @param $year
      * @return Period[]
      */
-    public function getQuarterlyByYear($year): array
+    public function getQuarterlyByYear(int $year): array
     {
         $quarterly = [];
         for ($quarter = 1; $quarter <= 4; $quarter++) {

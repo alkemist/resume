@@ -11,30 +11,33 @@ Icon: Icone
 Value: Valeur
 Weight: Poids
 Age: '{age} ans'
-Is listable: est listable
+Is Listable: Est listable
 
 Education: Formation
 Educations: Formations
 Name: Nom
 School: Ecole
 Details: Détails
-Date begin: Date de début
-Date end: Date de fin
+Date Begin: Date de début
+Date End: Date de fin
+Dates: Dates
 
 Experience: Experience
 Experiences: Experiences
 Main experiences: Principales experiences
 Title: Titre
 Description: Description
-Is freelance: Freelance
+Is Freelance: Freelance
 Freelance: Freelance
 Employee: Employé
-On site: Sur place
-On homepage: Page d'accueil
+On Site: Sur place
+On Homepage: Page d'accueil
 Options: Options
 Invoicing: Facturation
 in progress: en cours
 today: aujourd'hui
+Mission: Mission
+Parameters: Paramètres
 
 Company: Entreprise
 Companies: Entreprises
@@ -228,61 +231,10 @@ New message: Nouveau message
 Message sended: Message envoyé
 Notifications: Notifications
 
-Kitchen: Cuisine
-Fridge: Frigo
-Ingredient: Ingrédient
-Ingredients: Ingrédients
-Recipe: Recette
-Recipes: Recettes
-RecipeIngredient: Ingrédient
-recipeingredient: Ingrédient
-Recipe ingredients: Frigo
-KitchenIngredient: Frigo
-KitchenIngredients: Frigo
-Is vege: Végétarien
-Is vegan: Végan
-Preparation duration: Temps de préparation (min)
-Cooking duration: Temps de cuisson (min)
-Waiting duration: Temps de repos (min)
-Nb slices: Nombre de parts
-Instructions: Instructions
-Quantity: Quantité
-Source: Source
-Image file: Photo
-Image: Photo
-Is liquid: Liquide ?
-Is recipe: Recette ?
-form.label.delete: Supprimer la photo ?
-Measure: Mesure
-Unit: Unité
-None: Aucun
-
-g: g
-kg: kg
-ml: ml
-cl: cl
-l: l
-c-à-s: c-à-S
-c-à-c: c-à-C
-0: ''
-
-meat: Viandes
-fish_seafood: Poissons et fruits de mer
-fruit_vegetable_mushroom: Fruits, légumes et champignons
-cereal_legume: Céréales et Légumineuses
-animal_fat: Matières grasses animales
-vegetable_fat: Matières grasses végétales
-yeast: Levures
-aromatic_herb: Herbes aromatiques
-spice: Epices
-sugar: Sucres
-salt: Sels
-alcohol: Alcools
-water: Eau
-
 OperationFilter: Filtre
 OperationFilters: Filtres
 Filters: Filtres
+Filter: Filtre
 Accounting: Comptabilité
 Operation: Opération
 Operations: Opérations
@@ -296,15 +248,19 @@ Target: Cible
 Analyze: Analyse
 Label: Catégorie
 Statistiques: Statistiques
+Categories: Catégories
 
 
-supply: Fourniture
-food: Nourriture
-charge: Charge
-subscription: Abonnement
-income: Revenu
-refund: Remboursement
+Supply: Fourniture
+Food: Nourriture
+Charge: Charge
+Subscription: Abonnement
+Income: Revenu
+Refund: Remboursement
+Hidden: Caché
 other: Autre
 hobby: Loisir
-hidden: Caché
 
+vich_uploader:
+  form_label:
+    delete_confirm: Supprimer ?

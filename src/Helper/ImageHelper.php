@@ -9,13 +9,9 @@ abstract class ImageHelper
 {
     /**
      * Permet de réduire la taille d'une image jusqu'à un poids déterminé
-     * @param $imagePath
-     * @param $sizeInBytes
-     * @param null $height
-     * @return bool
      * @throws ImageResizeException
      */
-    public static function resizeToSize($imagePath, $sizeInBytes, $height = null)
+    public static function resizeToSize(string $imagePath, int $sizeInBytes, int $height = null): bool
     {
         $image = new ImageResize($imagePath);
 

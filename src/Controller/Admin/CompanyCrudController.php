@@ -48,7 +48,7 @@ class CompanyCrudController extends AbstractCrudController
             yield TextField::new('notes');
 
         } elseif (Crud::PAGE_EDIT === $pageName || Crud::PAGE_NEW === $pageName || Crud::PAGE_DETAIL === $pageName) {
-            yield FormField::addPanel('Informations')->setColumns(2);
+            yield FormField::addPanel('Informations');
             yield TextField::new('name')->setColumns(2);
             yield TextField::new('displayName')->setColumns(2);
 
