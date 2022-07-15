@@ -183,7 +183,7 @@ class Invoice implements Stringable
         return $this->status;
     }
 
-    public function setStatus(?string $status): self
+    public function setStatus(?InvoiceStatusEnum $status): self
     {
         $this->status = $status;
 

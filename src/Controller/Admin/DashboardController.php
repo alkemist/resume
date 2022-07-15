@@ -50,6 +50,7 @@ class DashboardController extends AbstractDashboardController
     {
         return parent::configureCrud()
             ->setFormThemes(['fields/form.html.twig', '@EasyAdmin/crud/form_theme.html.twig'])
+            ->showEntityActionsInlined()
         ;
     }
 
@@ -83,10 +84,20 @@ class DashboardController extends AbstractDashboardController
 
     public function configureActions(): Actions
     {
+        $editAction = Action::new(Action::EDIT, 'Edit', 'fa fa-pencil')
+            ->linkToCrudAction(Action::EDIT);
+
+        $actionDelete = Action::new(Action::DELETE, 'Delete', 'fa fa-trash-can')
+            ->linkToCrudAction(Action::DELETE);
+
         return parent::configureActions()
             ->add(Crud::PAGE_NEW, Action::INDEX)
             ->add(Crud::PAGE_EDIT, Action::INDEX)
             ->add(Crud::PAGE_EDIT, Action::DELETE)
+            ->remove(Crud::PAGE_INDEX, Action::EDIT)
+            ->add(Crud::PAGE_INDEX, $editAction)
+            ->remove(Crud::PAGE_INDEX, Action::DELETE)
+            ->add(Crud::PAGE_INDEX, $actionDelete)
             ->disable(Action::BATCH_DELETE)
         ;
     }

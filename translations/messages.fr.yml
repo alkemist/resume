@@ -3,6 +3,10 @@ Return to website: Retour sur le site web
 Logout: Se deconnecter
 Informations: Informations
 
+Update: Mettre à jour
+Edit: Éditer
+Delete: Supprimer
+
 Attribute: Attribut
 Attributes: Attributs
 ID: "#"
@@ -98,10 +102,13 @@ Number: Numéro
 Status: Statut
 Draft: Brouillon
 draft: Brouillon
+Valid: Validé
+valid: Validé
 Waiting: En attente
 waiting: En attente
 Payed: Encaissé
 payed: Encaissé
+Marqued as payed: Marquer comme payé
 Credit: Avoir
 Days Count: Jours
 Payment: Paiement
@@ -114,7 +121,6 @@ Invoices book: Livre des recettes
 Extra Ht: Extra HT
 Extra Libelle: Extra libellé
 Extra: Extra
-Update: Mettre à jour
 
 Activities: Journées
 Activity: Journée
@@ -128,7 +134,7 @@ Url: URL
 
 Skill: Compétence
 Skills: Compétences
-Main skills: Compétences principales
+Main Skills: Compétences principales
 Type: Type
 Level: Niveau
 Parent: Parent
@@ -264,3 +270,11 @@ hobby: Loisir
 vich_uploader:
   form_label:
     delete_confirm: Supprimer ?
+
+flash_message:
+  create: L'objet "%entityType% %entityName%" a été créé.
+  update: L'objet "%entityType% %entityName%" a été mis à jour.
+  delete: L'objet "%entityType% %entityName%" a été supprimé.
+  mark_as_waiting: L'objet "%entityType% %entityName%" a été marqué comme "en attente".
+  mark_as_payed: L'objet "%entityType% %entityName%" a été marqué comme "payé".
+  sended: L'objet "%entityType% %entityName%" a été envoyé.

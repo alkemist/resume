@@ -17,7 +17,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\PercentField;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
-use function Symfony\Component\Translation\t;
 
 class DeclarationCrudController extends AbstractCrudController
 {
@@ -40,12 +39,17 @@ class DeclarationCrudController extends AbstractCrudController
     {
         $validateAction = Action::new('validate', 'Validate', 'fa fa-check')
             ->linkToCrudAction('validate')
-            ->displayIf(fn (Declaration $declaration) => $declaration->getStatus() === DeclarationStatusEnum::Waiting)
+            ->displayIf(fn(Declaration $declaration) => $declaration->getStatus() === DeclarationStatusEnum::Waiting)
             ->addCssClass('btn-sm btn-success');
+
+        $actionDelete = Action::new(Action::DELETE, 'Delete', 'fa fa-trash-can')
+            ->displayIf(fn(Declaration $invoice) => $invoice->getStatus() === DeclarationStatusEnum::Waiting)
+            ->linkToCrudAction(Action::DELETE);
 
         $actions
             ->add(Crud::PAGE_INDEX, $validateAction)
-        ;
+            ->remove(Crud::PAGE_INDEX, Action::DELETE)
+            ->add(Crud::PAGE_INDEX, $actionDelete);
 
         return $actions;
     }
