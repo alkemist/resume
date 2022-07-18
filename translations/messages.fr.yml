@@ -6,6 +6,7 @@ Informations: Informations
 Update: Mettre à jour
 Edit: Éditer
 Delete: Supprimer
+Download: Télécharger
 
 Attribute: Attribut
 Attributes: Attributs
@@ -277,4 +278,8 @@ flash_message:
   delete: L'objet "%entityType% %entityName%" a été supprimé.
   mark_as_waiting: L'objet "%entityType% %entityName%" a été marqué comme "en attente".
   mark_as_payed: L'objet "%entityType% %entityName%" a été marqué comme "payé".
-  sended: L'objet "%entityType% %entityName%" a été envoyé.
+  invoice_sended: La facture "%entityName%" a été envoyé.
+  invoice_not_sended: La facture "%entityName%" n'a pas été envoyé. Pas d'email configuré.
+  declaration_calculated: Déclaration "%entityName%" recalculé.
+  operations_analyzed: Les opérations ont été analysées.
+  statement_analyzed: Le relevé a été analyzé.

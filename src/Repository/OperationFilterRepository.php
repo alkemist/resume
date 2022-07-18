@@ -29,7 +29,7 @@ class OperationFilterRepository extends ServiceEntityRepository
 
         $query->andWhere(
             $query->expr()->in('o.type', [
-                OperationTypeEnum::Income, OperationTypeEnum::Refund
+                OperationTypeEnum::Income->value, OperationTypeEnum::Refund->value
             ])
         );
 

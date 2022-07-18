@@ -5,9 +5,14 @@ namespace App\Controller\Admin;
 use App\Entity\Declaration;
 use App\Enum\DeclarationStatusEnum;
 use App\Enum\DeclarationTypeEnum;
+use App\Service\DeclarationService;
+use App\Service\FlashbagService;
+use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -17,9 +22,17 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\PercentField;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class DeclarationCrudController extends AbstractCrudController
 {
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private DeclarationService     $declarationService,
+        private FlashbagService        $flashbagService
+    ) {
+    }
+
     public static function getEntityFqcn(): string
     {
         return Declaration::class;
@@ -38,7 +51,12 @@ class DeclarationCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         $validateAction = Action::new('validate', 'Validate', 'fa fa-check')
-            ->linkToCrudAction('validate')
+            ->linkToCrudAction('validateAction')
+            ->displayIf(fn(Declaration $declaration) => $declaration->getStatus() === DeclarationStatusEnum::Waiting)
+            ->addCssClass('btn-sm btn-success');
+
+        $calculateAction = Action::new('calculate', 'Recalculate', 'fa fa-calculator')
+            ->linkToCrudAction('calculateAction')
             ->displayIf(fn(Declaration $declaration) => $declaration->getStatus() === DeclarationStatusEnum::Waiting)
             ->addCssClass('btn-sm btn-success');
 
@@ -48,6 +66,7 @@ class DeclarationCrudController extends AbstractCrudController
 
         $actions
             ->add(Crud::PAGE_INDEX, $validateAction)
+            ->add(Crud::PAGE_INDEX, $calculateAction)
             ->remove(Crud::PAGE_INDEX, Action::DELETE)
             ->add(Crud::PAGE_INDEX, $actionDelete);
 
@@ -88,8 +107,51 @@ class DeclarationCrudController extends AbstractCrudController
                 ->setFormTypeOption('block_name', 'invoices')
                 ->setFormTypeOption('allow_add', false)
                 ->setFormTypeOption('allow_delete', false)
-                ->setColumns(12)
-            ;
+                ->setColumns(12);
+        }
+    }
+
+    /**
+     * @param AdminContext $context
+     * @return RedirectResponse
+     */
+    public function validateAction(AdminContext $context): RedirectResponse
+    {
+        /** @var Declaration $declaration */
+        $declaration = $context->getEntity()->getInstance();
+
+        $declaration->setStatus(DeclarationStatusEnum::Payed);
+        $declaration->setPayedAt(new DateTime('now'));
+
+        $this->entityManager->flush();
+
+        $this->flashbagService->send('mark_as_payed', $declaration);
+        return $this->redirect($context->getReferrer());
+    }
+
+    /**
+     * @param AdminContext $context
+     * @return RedirectResponse
+     */
+    public function calculateAction(AdminContext $context): RedirectResponse
+    {
+        /** @var Declaration $declaration */
+        $declaration = $context->getEntity()->getInstance();
+
+        $this->declarationService->calculate($declaration);
+
+        $this->flashbagService->send('declaration_calculated', $declaration);
+        return $this->redirect($context->getReferrer());
+    }
+
+    /**
+     * @param Declaration $entityInstance
+     */
+    public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        parent::persistEntity($entityManager, $entityInstance);
+        if (!$entityInstance->getRevenue() && !$entityInstance->getTax()) {
+            $this->declarationService->calculate($entityInstance);
         }
     }
 }

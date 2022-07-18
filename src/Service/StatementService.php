@@ -24,6 +24,11 @@ class StatementService
     ) {
     }
 
+    public function get(Statement $statement): bool|string
+    {
+        return $this->statementDirectory . $statement->getFilename();
+    }
+
     /**
      * @throws NonUniqueResultException
      * @throws Exception

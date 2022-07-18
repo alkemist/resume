@@ -3,17 +3,31 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Statement;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use App\Service\FlashbagService;
+use App\Service\StatementService;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class StatementCrudController extends AbstractCrudController
 {
+    public function __construct(
+        private StatementService $statementService,
+        private FlashbagService  $flashbagService
+    ) {
+    }
+
     public static function getEntityFqcn(): string
     {
         return Statement::class;
@@ -32,12 +46,20 @@ class StatementCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         $ocrAction = Action::new('ocr', 'Ocr', 'fa fa-eye')
-            ->linkToCrudAction('ocr')
+            ->linkToCrudAction('ocrAction')
+            ->displayIf(fn(Statement $statement) => $statement->getOperationsCount() == 0)
+            ->addCssClass('btn-sm btn-success');
+
+        $downloadAction = Action::new('download', 'Download', 'fa-solid fa-file-pdf')
+            ->linkToCrudAction('downloadAction')
+            ->setHtmlAttributes(['target' => '#blank'])
             ->addCssClass('btn-sm btn-success');
 
         $actions
+            ->add(Crud::PAGE_INDEX, $downloadAction)
+            ->add(Crud::PAGE_EDIT, $downloadAction)
             ->add(Crud::PAGE_INDEX, $ocrAction)
-        ;
+            ->add(Crud::PAGE_EDIT, $ocrAction);
 
         return $actions;
     }
@@ -52,6 +74,48 @@ class StatementCrudController extends AbstractCrudController
         }
         if (Crud::PAGE_INDEX === $pageName) {
             yield NumberField::new('operationsCount', 'Operations');
+        }
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function ocrAction(AdminContext $context): RedirectResponse
+    {
+        /** @var Statement $declaration */
+        $statement = $context->getEntity()->getInstance();
+
+        $this->statementService->extractOperations($statement);
+
+        $this->flashbagService->send('statement_analyzed', $declaration);
+        return $this->redirect($context->getReferrer());
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function downloadAction(AdminContext $context): Response
+    {
+        /** @var Statement $declaration */
+        $statement = $context->getEntity()->getInstance();
+
+        return $this->file(
+            $this->statementService->get($statement),
+            $statement->getFilename(),
+            ResponseHeaderBag::DISPOSITION_INLINE
+        );
+    }
+
+    /**
+     * @param Statement $entityInstance
+     * @throws NonUniqueResultException
+     */
+    public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        parent::persistEntity($entityManager, $entityInstance);
+
+        if ($entityInstance->getOperationsCount() == 0) {
+            $this->statementService->extractOperations($entityInstance);
         }
     }
 }

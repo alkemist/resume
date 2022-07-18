@@ -61,7 +61,7 @@ class Invoice implements Stringable
     private ?string $totalTax = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
-    private string $object;
+    private ?string $object = null;
 
     #[ORM\Column(type: Types::SMALLINT, nullable: true)]
     private int $tjm;

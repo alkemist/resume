@@ -27,9 +27,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Exception;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\Routing\Annotation\Route;
 use function Symfony\Component\Translation\t;
 
 class InvoiceCrudController extends AbstractCrudController
@@ -164,7 +166,6 @@ class InvoiceCrudController extends AbstractCrudController
     /**
      * @param AdminContext $context
      * @return Response
-     * @throws Exception
      */
     public function validateAction(AdminContext $context): Response
     {
@@ -242,7 +243,7 @@ class InvoiceCrudController extends AbstractCrudController
                     'invoice-jeremy-achain-' . $invoice->getNumber() . '.pdf'
                 );
 
-            if ($this->getParameter('APP_ENV') == 'prod') {
+            if ($this->getParameter('APP_ENV') === 'prod') {
                 $email->to($emails[0]);
                 $email->addCc($this->getParameter('MAILER_FROM'));
 
@@ -256,11 +257,11 @@ class InvoiceCrudController extends AbstractCrudController
             }
 
             $this->mailer->send($email);
-
-            $this->flashbagService->send('sended', $invoice);
-            return $this->redirect($context->getReferrer());
+            $this->flashbagService->send('invoice_sended', $invoice);
+        } else {
+            $this->flashbagService->send('invoice_not_sended', $invoice, 'error');
         }
-        throw new Exception('Email not found');
+        return $this->redirect($context->getReferrer());
     }
 
     /**
@@ -270,13 +271,22 @@ class InvoiceCrudController extends AbstractCrudController
      */
     private function generatePdf(Invoice $invoice): Response
     {
-        return new Response(
+        return $this->file(
             $this->invoiceService->getOrCreatePdf($invoice, true),
-            200,
-            array(
-                'Content-Type'        => 'application/pdf',
-                'Content-Disposition' => 'inline; filename="' . $invoice->getFilename() . '"'
-            )
+            $invoice->getFilename(),
+            ResponseHeaderBag::DISPOSITION_INLINE
+        );
+    }
+
+    #[Route('/admin/invoice/csv', name: 'invoices_csv')]
+    public function csv()
+    {
+        $filename = $this->invoiceService->generateInvoicesBook();
+
+        return $this->file(
+            $filename,
+            'livre-recettes.csv',
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT
         );
     }
 

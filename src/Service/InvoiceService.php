@@ -45,7 +45,7 @@ class InvoiceService
         $pdf = $this->createPdf($invoice);
         $pdf->render($this->pdfFileDirectory . $invoice->getFilename(), 'F');
 
-        return file_get_contents($this->pdfFileDirectory . $invoice->getFilename());
+        return $this->pdfFileDirectory . $invoice->getFilename();
     }
 
     /**
@@ -162,7 +162,7 @@ class InvoiceService
      */
     public function generateInvoicesBook(): string
     {
-        $invoices = $this->invoiceRepository->findAll();
+        $invoices = $this->invoiceRepository->findInvoicesBy(null, null, true);
 
         $columns = ["Date d'encaissement",
                     "Référence de la facture",
