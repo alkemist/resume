@@ -2,7 +2,6 @@
 
 namespace App\Command;
 
-use App\Service\CompanyService;
 use App\Service\DeclarationService;
 use App\Service\InvoiceService;
 use App\Service\ReportService;
@@ -33,7 +32,6 @@ class NotificationCommand extends Command
         protected DeclarationService $declarationService,
         protected InvoiceService $invoiceService,
         protected ReportService $reportService,
-        protected CompanyService $companyService
     ) {
         parent::__construct();
     }
@@ -60,7 +58,6 @@ class NotificationCommand extends Command
             $this->invoiceService->getNotifications(),
             $this->declarationService->getNotifications(),
             $this->reportService->getNotifications(),
-            $this->companyService->getNotifications()
         );
 
         if (count($notifications) > 0) {

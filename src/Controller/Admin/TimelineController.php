@@ -11,12 +11,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class TimelineController
 {
     /**
-     * @Route("/admin/timeline", name="timeline")
      * @throws Exception
      */
-    public function report(
-        ExperienceRepository $experienceRepository
-    ): void {
+    #[Route(path: '/admin/timeline', name: 'timeline')]
+    public function report(ExperienceRepository $experienceRepository): void
+    {
         $viewData = [
             'timeline' => [],
             'months'   => []
@@ -25,21 +24,18 @@ class TimelineController
         $firstYear = 2015;
         $lastYear = intval((new DateTime())->format('Y'));
         $lastMonth = intval((new DateTime())->format('m'));
-
         for ($y = $firstYear; $y <= $lastYear; $y++) {
             $viewData['timeline'][$y] = [];
             for ($m = 1; $m <= 12; $m++) {
                 $viewData['timeline'][$y][$m] = [];
             }
         }
-
         for ($m = 1; $m <= 12; $m++) {
             $viewData['months'][] = $m;
         }
-
         foreach ($experiences as $experience) {
             $dateBegin = $experience->getDateBegin();
-            $dateEnd = $experience->getDateEnd() ? $experience->getDateEnd() : new DateTime();
+            $dateEnd = $experience->getDateEnd() ?: new DateTime();
             $currentDate = clone $dateBegin;
             $yearBegin = intval($experience->getDateBegin()->format('Y'));
             $monthBegin = intval($experience->getDateBegin()->format('m'));
@@ -51,7 +47,6 @@ class TimelineController
                 $currentDate->add(new DateInterval('P1M'));
             } while ($currentDate < $dateEnd);
         }
-
         //return $this->render('page/timeline.html.twig', $viewData);
     }
 }

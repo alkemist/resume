@@ -24,7 +24,7 @@ class IndexController extends AbstractController
     /**
      * @throws QueryException|TransportExceptionInterface
      */
-    #[Route(path: '/', name: 'index')]
+    #[Route(path: '/', name: 'app_index')]
     public function index(Request              $request, AttributeRepository $attributeRepository,
                           SkillRepository      $skillRepository, ExperienceRepository $experienceRepository,
                           EducationRepository  $educationRepository, HobbyRepository $hobbyRepository,
@@ -62,7 +62,7 @@ class IndexController extends AbstractController
 
             $mailer->send($email);
 
-            return $this->redirectToRoute('index', ['messageSended' => true]);
+            return $this->redirectToRoute('app_index', ['messageSended' => true]);
         }
         $data['isSubmittedWithErrors'] = $form->isSubmitted() && !$form->isValid();
         return $this->render('page/index.html.twig', $data);

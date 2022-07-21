@@ -26,9 +26,9 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 class OperationCrudController extends AbstractCrudController
 {
     public function __construct(
-        private OperationFilterRepository $operationFilterRepository,
-        private StatementService          $statementService,
-        private FlashbagService           $flashbagService
+        private readonly OperationFilterRepository $operationFilterRepository,
+        private readonly StatementService          $statementService,
+        private readonly FlashbagService           $flashbagService
     ) {
     }
 

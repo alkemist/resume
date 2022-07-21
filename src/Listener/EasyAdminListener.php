@@ -13,7 +13,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 final class EasyAdminListener implements EventSubscriberInterface
 {
-    public function __construct(private FlashbagService $flashbagService)
+    public function __construct(private readonly FlashbagService $flashbagService)
     {
     }
 

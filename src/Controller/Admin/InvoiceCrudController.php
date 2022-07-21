@@ -2,9 +2,12 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Company;
 use App\Entity\Invoice;
 use App\Enum\InvoicePaymentTypeEnum;
 use App\Enum\InvoiceStatusEnum;
+use App\Repository\ActivityRepository;
+use App\Repository\InvoiceRepository;
 use App\Service\FlashbagService;
 use App\Service\InvoiceService;
 use DateTime;
@@ -24,6 +27,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Exception;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,10 +41,13 @@ use function Symfony\Component\Translation\t;
 class InvoiceCrudController extends AbstractCrudController
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private MailerInterface        $mailer,
-        private InvoiceService         $invoiceService,
-        private FlashbagService        $flashbagService
+        private readonly EntityManagerInterface $entityManager,
+        private readonly MailerInterface        $mailer,
+        private readonly InvoiceService         $invoiceService,
+        private readonly InvoiceRepository      $invoiceRepository,
+        private readonly ActivityRepository     $activityRepository,
+        private readonly FlashbagService        $flashbagService,
+        private readonly AdminUrlGenerator      $adminUrlGenerator,
     ) {
 
     }
@@ -57,8 +64,7 @@ class InvoiceCrudController extends AbstractCrudController
             ->setEntityLabelInPlural('Invoices')
             ->setDefaultSort(['createdAt' => 'DESC'])
             ->setSearchFields(['company.name', 'period.year'])
-            ->showEntityActionsInlined(false)
-        ;
+            ->showEntityActionsInlined(false);
     }
 
     public function configureActions(Actions $actions): Actions
@@ -99,8 +105,7 @@ class InvoiceCrudController extends AbstractCrudController
             ->add(Crud::PAGE_INDEX, $pdfAction)
             ->add(Crud::PAGE_EDIT, $pdfAction)
             ->remove(Crud::PAGE_INDEX, Action::DELETE)
-            ->add(Crud::PAGE_INDEX, $actionDelete)
-        ;
+            ->add(Crud::PAGE_INDEX, $actionDelete);
 
         return $actions;
     }
@@ -163,10 +168,6 @@ class InvoiceCrudController extends AbstractCrudController
         }
     }
 
-    /**
-     * @param AdminContext $context
-     * @return Response
-     */
     public function validateAction(AdminContext $context): Response
     {
         /** @var Invoice $invoice */
@@ -181,8 +182,6 @@ class InvoiceCrudController extends AbstractCrudController
     }
 
     /**
-     * @param AdminContext $context
-     * @return Response
      * @throws Exception
      */
     public function payedAction(AdminContext $context): Response
@@ -201,8 +200,6 @@ class InvoiceCrudController extends AbstractCrudController
     }
 
     /**
-     * @param AdminContext $context
-     * @return Response
      * @throws Exception
      */
     public function pdfAction(AdminContext $context): Response
@@ -214,8 +211,6 @@ class InvoiceCrudController extends AbstractCrudController
     }
 
     /**
-     * @param AdminContext $context
-     * @return Response
      * @throws Exception
      * @throws TransportExceptionInterface
      */
@@ -265,8 +260,6 @@ class InvoiceCrudController extends AbstractCrudController
     }
 
     /**
-     * @param Invoice $invoice
-     * @return Response
      * @throws Exception
      */
     private function generatePdf(Invoice $invoice): Response
@@ -288,6 +281,36 @@ class InvoiceCrudController extends AbstractCrudController
             'livre-recettes.csv',
             ResponseHeaderBag::DISPOSITION_ATTACHMENT
         );
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     * @throws Exception
+     */
+    #[Route('/admin/report/{year<\d+>}/{month<\d+>}/{slug}/invoice', name: 'report_invoice')]
+    public function generate(
+        int $year, int $month, Company $company
+    ) {
+        $currentDate = new DateTime($year . ($month < 10 ? '0' : '') . $month . '01');
+        $activities = $this->activityRepository->findByCompanyAndDate($company, $currentDate);
+        $invoices = $this->invoiceRepository->getByDate($currentDate);
+        $invoice = new Invoice();
+
+        if (count($invoices) == 1 && $invoices[0]->getCompany() === $company) {
+            $invoice = $invoices[0];
+            $invoice->importActivities($activities);
+            $this->entityManager->flush();
+        } else {
+            $invoice = $this->invoiceService->createByActivities($currentDate, $company, $activities);
+        }
+
+        $url = $this->adminUrlGenerator
+            ->setController(InvoiceCrudController::class)
+            ->setAction(Action::EDIT)
+            ->setEntityId($invoice->getId())
+            ->generateUrl();
+        return $this->redirect($url);
     }
 
     /**

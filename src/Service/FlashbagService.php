@@ -7,7 +7,7 @@ use Symfony\Component\Translation\TranslatableMessage;
 
 class FlashbagService
 {
-    public function __construct(private RequestStack $requestStack)
+    public function __construct(private readonly RequestStack $requestStack)
     {
     }
 
@@ -16,7 +16,7 @@ class FlashbagService
         $parameters = [];
 
         if ($entity) {
-            $className = str_replace('App\\Entity\\', '', get_class($entity));
+            $className = str_replace('App\\Entity\\', '', (string)$entity::class);
             $parameters = [
                 '%entityType%' => new TranslatableMessage($className),
                 '%entityName%' => (string)$entity

@@ -20,6 +20,7 @@ yarn-error.log
 
 ###> phpstorm ###
 /.idea/
+/.sass-cache/
 ###< phpstorm ###
 
 ###> data ###

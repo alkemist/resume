@@ -27,9 +27,9 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 class DeclarationCrudController extends AbstractCrudController
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private DeclarationService     $declarationService,
-        private FlashbagService        $flashbagService
+        private readonly EntityManagerInterface $entityManager,
+        private readonly DeclarationService     $declarationService,
+        private readonly FlashbagService        $flashbagService
     ) {
     }
 
@@ -111,10 +111,6 @@ class DeclarationCrudController extends AbstractCrudController
         }
     }
 
-    /**
-     * @param AdminContext $context
-     * @return RedirectResponse
-     */
     public function validateAction(AdminContext $context): RedirectResponse
     {
         /** @var Declaration $declaration */
@@ -129,10 +125,6 @@ class DeclarationCrudController extends AbstractCrudController
         return $this->redirect($context->getReferrer());
     }
 
-    /**
-     * @param AdminContext $context
-     * @return RedirectResponse
-     */
     public function calculateAction(AdminContext $context): RedirectResponse
     {
         /** @var Declaration $declaration */

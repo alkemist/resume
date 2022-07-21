@@ -16,34 +16,31 @@ use App\Entity\Person;
 use App\Entity\Skill;
 use App\Entity\Statement;
 use App\Entity\User;
-use App\Repository\ExperienceRepository;
-use App\Repository\InvoiceRepository;
-use App\Service\DeclarationService;
+use App\Form\Type\MonthActivitiesType;
+use App\Service\DashboardService;
+use App\Service\ReportService;
 use DateTime;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
-use Ds\Map;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
+use Exception;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
-use Symfony\UX\Chartjs\Model\Chart;
-use function Symfony\Component\Translation\t;
 
 class DashboardController extends AbstractDashboardController
 {
     public function __construct(
-        private ChartBuilderInterface $chartBuilder,
-        private InvoiceRepository     $invoiceRepository,
-        private ExperienceRepository  $experienceRepository,
-        private DeclarationService    $declarationService,
+        private DashboardService $dashboardService,
+        private ReportService    $reportService,
     ) {
     }
 
@@ -51,152 +48,49 @@ class DashboardController extends AbstractDashboardController
      * @throws NonUniqueResultException
      * @throws NoResultException
      */
-    #[Route('/admin/{year<\d+>?0}/{quarter<\d+>?0}', name: 'dashboard')]
-    public function index(int $year = 0, int $quarter = 0): Response
+    #[Route('/admin/{year<\d+>?0}', name: 'dashboard')]
+    public function dashboard(int $year = 0): Response
     {
-        $viewData = [];
-
-        $viewData['currentYear'] = intval((new DateTime())->format('Y'));
-        $viewData['currentQuarter'] = ceil((new DateTime())->format('n') / 3);
-        $viewData['activeYear'] = $year ? $year : $viewData['currentYear'];
-        $viewData['activeQuarter'] = $quarter ? $quarter : $viewData['currentQuarter'];
-        $viewData['years'] = array_filter($this->invoiceRepository->findYears());
-
-        if (!in_array($viewData['currentYear'], $viewData['years'])) {
-            $viewData['years'][] = $viewData['currentYear'];
-        }
-
-        $viewData['activeRevenuesOnYear'] = $this->invoiceRepository->getSalesRevenuesBy($viewData['activeYear']);
-        $viewData['activeRevenuesOnQuarter'] = $this->invoiceRepository->getSalesRevenuesBy(
-            $viewData['activeYear'], $viewData['activeQuarter']
-        );
-        $viewData['currentRevenuesOnYear'] = $this->invoiceRepository->getSalesRevenuesBy($viewData['currentYear']);
-        $viewData['currentRevenuesOnQuarter'] = $this->invoiceRepository->getSalesRevenuesBy(
-            $viewData['currentYear'], $viewData['currentQuarter']
-        );
-        $viewData['dayCount'] = $this->invoiceRepository->getDaysCountByYear($viewData['activeYear']);
-
-        $viewData['remainingDaysBeforeTaxLimit'] = $this->invoiceRepository->remainingDaysBeforeTaxLimit();
-        $viewData['remainingDaysBeforeLimit'] = $this->invoiceRepository->remainingDaysBeforeLimit();
-        $viewData['currentTaxesOnQuarter'] = $this->invoiceRepository->getSalesTaxesBy(
-            $viewData['activeYear'], $viewData['activeQuarter']
-        );
-
-        $revenuesByYears = $this->invoiceRepository->getSalesRevenuesGroupBy('year');
-        $viewData['revenuesByYears'] = array_combine(
-            array_map(function ($item) {
-                return $item['year'];
-            }, $revenuesByYears),
-            array_map(function ($item) {
-                return intval($item['total']);
-            }, $revenuesByYears)
-        );
-
-        $revenuesByQuarters = $this->invoiceRepository->getSalesRevenuesGroupBy(
-            'quarter', $viewData['activeYear'], null, true
-        );
-        $viewData['revenuesByQuarters'] = array_combine(
-            array_map(function ($item) {
-                return 'T' . $item['quarter'];
-            }, $revenuesByQuarters),
-            array_map(function ($item) {
-                return intval($item['total']);
-            }, $revenuesByQuarters)
-        );
-
-        $daysByMonthMap = new Map();
-        $daysByMonth = $this->invoiceRepository->getDaysCountByMonth($viewData['activeYear']);
-        $daysByMonthAssociative = [];
-        foreach ($daysByMonth as $item) {
-            $daysByMonthAssociative[intval($item['month'])] = $item['total'];
-        }
-        for ($i = 1; $i <= 12; $i++) {
-            $monthName = t(date('F', mktime(0, 0, 0, $i, 10)));
-            $daysByMonthMap->put($monthName, isset($daysByMonthAssociative[$i]) ?? 0);
-        }
-        $viewData['daysByMonth'] = $daysByMonthMap;
-
-        $viewData['colorsByYears'] = [];
-        foreach ($viewData['years'] as $year) {
-            $viewData['colorsByYears'][] = $year == $viewData['activeYear'] ? 'rgba(56, 142, 60, 0.6)' : 'rgba(56, 142, 60, 0.3)';
-        }
-
-        $viewData['colorsByQuarters'] = [];
-        foreach ($viewData['revenuesByQuarters'] as $quarter => $item) {
-            if (isset($quarter[1])) {
-                $viewData['colorsByQuarters'][] = $quarter[1] == $viewData['activeQuarter'] ? 'rgba(56, 142, 60, 0.6)' : 'rgba(0, 0, 0, 0.1)';
-            }
-        }
-
-        $viewData['unpayedInvoices'] = $this->invoiceRepository->findInvoicesBy(null, null, false);
-        $viewData['currentExperiences'] = $this->experienceRepository->getCurrents();
-        $viewData['nextDueDate'] = $this->declarationService->getNextDueDate();
-
-        $viewData['globalByYears'] = [];
-        foreach ($viewData['years'] as $year) {
-            $totalSocial = $this->declarationService->declarationTypeSocial->getTotalByYear($year);
-            $totalCfe = $this->declarationService->declarationTypeCfe->getTotalByYear($year);
-            $totalTva = $this->declarationService->declarationTypeTva->getTotalByYear($year);
-            $totalImpot = $this->declarationService->declarationTypeImpot->getTotalByYear($year);
-            $totalSales = $this->invoiceRepository->getSalesRevenuesBy($year);
-            $daysByMonth = $this->invoiceRepository->getDaysCountByYear($year);
-            $net = $totalSales - $totalSocial - $totalImpot - $totalCfe;
-
-            $viewData['globalByYears'][] = [
-                'year'       => $year,
-                'social'     => round($totalSocial),
-                'cfe'        => round($totalCfe),
-                'tva'        => round($totalTva),
-                'impot'      => round($totalImpot),
-                'ht'         => round($totalSales),
-                'net'        => round($net),
-                'days'       => $daysByMonth,
-                'percent'    => round($daysByMonth * 100 / (20 * 12)),
-                'netByMonth' => round($net / 12),
-            ];
-        }
-
-        $chartRevenuesByYears = $this->chartBuilder->createChart(Chart::TYPE_BAR);
-        $chartRevenuesByYears->setData([
-                                           'labels'   => array_keys($viewData['revenuesByYears']),
-                                           'datasets' => [
-                                               [
-                                                   'label'           => 'CA (€)',
-                                                   'backgroundColor' => array_values($viewData['colorsByYears']),
-                                                   'data'            => array_values($viewData['revenuesByYears']),
-                                               ],
-                                           ],
-                                       ]);
-        $viewData['chartRevenuesByYears'] = $chartRevenuesByYears;
-
-        $chartRevenuesByQuarters = $this->chartBuilder->createChart(Chart::TYPE_BAR);
-        $chartRevenuesByQuarters->setData([
-                                              'labels'   => array_keys($viewData['revenuesByQuarters']),
-                                              'datasets' => [
-                                                  [
-                                                      'label'           => 'CA (€)',
-                                                      'backgroundColor' => array_values($viewData['colorsByQuarters']),
-                                                      'data'            => array_values(
-                                                          $viewData['revenuesByQuarters']
-                                                      ),
-                                                  ],
-                                              ],
-                                          ]);
-        $viewData['chartRevenuesByQuarters'] = $chartRevenuesByQuarters;
-
-        $chartDaysByMonth = $this->chartBuilder->createChart(Chart::TYPE_BAR);
-        $chartDaysByMonth->setData([
-                                       'labels'   => $viewData['daysByMonth']->keys(),
-                                       'datasets' => [
-                                           [
-                                               'label' => 'CA (€)',
-                                               'data'  => $viewData['daysByMonth']->values(),
-                                           ],
-                                       ],
-                                   ]);
-        $viewData['chartDaysByMonth'] = $chartDaysByMonth;
+        $viewData = $this->dashboardService->getDashboard($year);
 
         return $this->render('admin/dashboard.html.twig', $viewData);
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     * @throws Exception
+     */
+    #[Route('/admin/report/{year<\d+>?0}/{month<\d+>?0}/{slug?}', name: 'report')]
+    public function report(Request $request, int $year = 0, int $month = 0, Company $company = null): Response
+    {
+        $viewData['currentYear'] = (new DateTime())->format('Y');
+        $viewData['activeYear'] = intval($year ? $year : $viewData['currentYear']);
+        $viewData['activeMonth'] = intval($month ? $month : (new DateTime())->format('m'));
+
+        $currentDate = new DateTime(
+            $viewData['activeYear'] . ($viewData['activeMonth'] < 10 ? '0' : '') . $viewData['activeMonth'] . '01'
+        );
+        $viewData = $this->reportService->getDashboard($viewData, $currentDate, $year, $month, $company);
+
+        $form = $this->createForm(MonthActivitiesType::class, null, [
+            'activities'  => $viewData['companyActivities'],
+            'currentDate' => clone $currentDate,
+            'company'     => $viewData['activeCompany']
+        ]);
+        $form->handleRequest($request);
+        $viewData['reportForm'] = $form->createView();
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->reportService->sendActivities($form->getData(), $currentDate);
+            return $this->redirectToRoute(
+                'report',
+                ['year' => $viewData['activeYear'], 'month' => $viewData['activeMonth'], 'slug' => $viewData['activeCompany'] ? $viewData['activeCompany']->getSlug(
+                ) : '']
+            );
+        }
+
+        return $this->render('admin/report.html.twig', $viewData);
     }
 
     public function configureDashboard(): Dashboard
@@ -219,9 +113,10 @@ class DashboardController extends AbstractDashboardController
     {
         yield MenuItem::linkToUrl('Return to website', 'fa fa-arrow-left', '/');
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-chart-bar');
+        yield MenuItem::linkToRoute('Report', 'fa fa-fw fa-calendar-alt', 'report');
 
         yield MenuItem::section('Invoicing');
-        yield MenuItem::linkToCrud('Invoices', 'fa fa-coins', Invoice::class);//->setBadge('test badge');
+        yield MenuItem::linkToCrud('Invoices', 'fa fa-coins', Invoice::class)->setBadge('test badge');
         yield MenuItem::linkToRoute('Invoices book', 'fa fa-coins', 'invoices_csv');
         yield MenuItem::linkToCrud('Declarations', 'fa fa-landmark', Declaration::class);
         yield MenuItem::linkToCrud('Companies', 'fa fa-building', Company::class);
@@ -280,5 +175,10 @@ class DashboardController extends AbstractDashboardController
             ->displayUserAvatar()
             // you can also pass an email address to use gravatar's service
             ->setGravatarEmail($user->getEmail());
+    }
+
+    public function configureAssets(): Assets
+    {
+        return Assets::new()->addCssFile('build/css/admin.css');
     }
 }

@@ -26,14 +26,15 @@ Encore
     .addEntry('app', './assets/app.js')
     .addEntry('bootstrap', './assets/bootstrap.js')
 
-    .addStyleEntry('css/app', './assets/css/app.scss')
+    .addStyleEntry('css/admin', './assets/css/admin.scss')
     .addStyleEntry('css/login', './assets/css/login.scss')
+    /*.addStyleEntry('css/app', './assets/css/app.scss')
     .addStyleEntry('css/index', './assets/css/index.scss')
     .addStyleEntry('css/admin', './assets/css/admin.scss')
     .addStyleEntry('css/dashboard', './assets/css/dashboard.scss')
     .addStyleEntry('css/report', './assets/css/report.scss')
     .addStyleEntry('css/report_pdf', './assets/css/report_pdf.scss')
-    .addStyleEntry('css/timeline', './assets/css/timeline.scss')
+    .addStyleEntry('css/timeline', './assets/css/timeline.scss')*/
 
     // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
     .enableStimulusBridge('./assets/controllers.json')

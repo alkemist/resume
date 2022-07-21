@@ -23,8 +23,8 @@ use Vich\UploaderBundle\Form\Type\VichImageType;
 class StatementCrudController extends AbstractCrudController
 {
     public function __construct(
-        private StatementService $statementService,
-        private FlashbagService  $flashbagService
+        private readonly StatementService $statementService,
+        private readonly FlashbagService  $flashbagService
     ) {
     }
 
@@ -82,6 +82,7 @@ class StatementCrudController extends AbstractCrudController
      */
     public function ocrAction(AdminContext $context): RedirectResponse
     {
+        $declaration = null;
         /** @var Statement $declaration */
         $statement = $context->getEntity()->getInstance();
 
