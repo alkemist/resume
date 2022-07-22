@@ -11,16 +11,12 @@ class FlashbagService
     {
     }
 
-    public function send(string $action, $entity = null, $type = 'success'): void
+    public function send(string $action, $entity = null, $parameters = [], $type = 'success'): void
     {
-        $parameters = [];
-
         if ($entity) {
             $className = str_replace('App\\Entity\\', '', (string)$entity::class);
-            $parameters = [
-                '%entityType%' => new TranslatableMessage($className),
-                '%entityName%' => (string)$entity
-            ];
+            $parameters['%entityType%'] = new TranslatableMessage($className);
+            $parameters['%entityName%'] = (string)$entity;
         }
 
         $this->requestStack->getSession()->getFlashBag()->add(

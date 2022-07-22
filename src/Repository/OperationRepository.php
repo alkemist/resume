@@ -6,6 +6,7 @@ use App\Entity\Operation;
 use App\Enum\OperationTypeEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -91,5 +92,18 @@ class OperationRepository extends ServiceEntityRepository
         }
 
         return $query->getQuery()->getResult();
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function countNullTypes(): int
+    {
+        $query = $this->createQueryBuilder('o')
+            ->select('COUNT(o.id) nullCount')
+            ->where('o.type IS NULL');
+
+        return $query->getQuery()->getSingleScalarResult();
     }
 }

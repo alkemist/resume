@@ -17,7 +17,9 @@ use App\Entity\Skill;
 use App\Entity\Statement;
 use App\Entity\User;
 use App\Form\Type\MonthActivitiesType;
+use App\Service\AccountingService;
 use App\Service\DashboardService;
+use App\Service\InvoiceService;
 use App\Service\ReportService;
 use DateTime;
 use Doctrine\ORM\NonUniqueResultException;
@@ -39,8 +41,10 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class DashboardController extends AbstractDashboardController
 {
     public function __construct(
-        private DashboardService $dashboardService,
-        private ReportService    $reportService,
+        private DashboardService  $dashboardService,
+        private ReportService     $reportService,
+        private AccountingService $accountingService,
+        private InvoiceService    $invoiceService
     ) {
     }
 
@@ -96,7 +100,7 @@ class DashboardController extends AbstractDashboardController
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('Resume')
+            ->setTitle('Admin')
             ->setTranslationDomain('messages')
             ->renderSidebarMinimized()
             ->renderContentMaximized();
@@ -109,6 +113,10 @@ class DashboardController extends AbstractDashboardController
             ->showEntityActionsInlined();
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToUrl('Return to website', 'fa fa-arrow-left', '/');
@@ -116,8 +124,8 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToRoute('Report', 'fa fa-fw fa-calendar-alt', 'report');
 
         yield MenuItem::section('Invoicing');
-        yield MenuItem::linkToCrud('Invoices', 'fa fa-coins', Invoice::class)->setBadge('test badge');
-        yield MenuItem::linkToRoute('Invoices book', 'fa fa-coins', 'invoices_csv');
+        yield MenuItem::linkToCrud('Invoices', 'fa fa-coins', Invoice::class)
+            ->setBadge($this->invoiceService->countWaitingInvoices());
         yield MenuItem::linkToCrud('Declarations', 'fa fa-landmark', Declaration::class);
         yield MenuItem::linkToCrud('Companies', 'fa fa-building', Company::class);
         yield MenuItem::linkToCrud('Persons', 'fa fa-users', Person::class);
@@ -135,7 +143,8 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::section('Accounting');
 
         yield MenuItem::linkToCrud('Statements', 'fa fa-file-alt', Statement::class);
-        yield MenuItem::linkToCrud('Operations', 'fa fa-columns', Operation::class);
+        yield MenuItem::linkToCrud('Operations', 'fa fa-columns', Operation::class)
+            ->setBadge($this->accountingService->getNullTypesCount());
         yield MenuItem::linkToCrud('Filters', 'fa fa-filter', OperationFilter::class);
     }
 

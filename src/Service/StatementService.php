@@ -33,7 +33,7 @@ class StatementService
      * @throws NonUniqueResultException
      * @throws Exception
      */
-    public function extractOperations(Statement $statement): void
+    public function extractOperations(Statement $statement, bool $throwError): void
     {
         $filePath = $this->statementDirectory . $statement->getFilename();
         $operations = [];
@@ -57,10 +57,6 @@ class StatementService
                     $operation = explode("\t", $line);
                     if (preg_match('#\d{2}/\d{2}/\d{4}#', $operation[0])) {
                         $date = DateTime::createFromFormat('d/m/Y', $operation[0]);
-
-                        if (!$statement->getDate()) {
-                            $statement->setDate($date);
-                        }
 
                         $operations[] = [
                             $date,
@@ -87,8 +83,6 @@ class StatementService
                 }
             }
         }
-
-        $statement->setOperationsCount(count($operations));
 
         $positiveFilters = array_column($this->operationFilterRepository->getPositiveFilters(), 'name');
         $positiveExceptionFilters = $this->operationFilterRepository->getPositiveExceptionFilters();
@@ -141,23 +135,26 @@ class StatementService
         }
 
         if (round($startAmount + $totalAmount, 2) != round($endAmount, 2)) {
-            if (isset($date)) {
-                dump($date->format('d/m/Y'));
+            if ($throwError) {
+                if (isset($date)) {
+                    dump('Date : ' . $date->format('d/m/Y'));
+                }
+                dump("Montant de départ : " . $startAmount);
+                dump("Montant de fin : " . $endAmount);
+                dump("Total calculé : " . ($startAmount + $totalAmount));
+                dump("Différence : " . round($endAmount - ($startAmount + $totalAmount), 2));
+                dump("Valeurs positives");
+                dump($logPositives);
+                dump("Valeurs negatives");
+                dump($logNegatives);
+
+                exit;
             }
-            dump("Start : " . $startAmount, "End : " . $endAmount, "Total : " . ($startAmount + $totalAmount));
-            dump("Positives");
-            dump($logPositives);
-            dump("Negatives");
-            dump($logNegatives);
-
-            exit;
+        } else {
+            $statement->setOperationsCount(count($operations));
+            $this->entityManager->flush();
         }
 
-        if ($nbOperations === 0) {
-            throw new Exception('Aucune ligne ajouté');
-        }
-
-        $this->entityManager->flush();
     }
 
     public function analyseOperation(Operation $operation, array $filters): void

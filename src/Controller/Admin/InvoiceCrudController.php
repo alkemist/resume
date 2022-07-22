@@ -62,7 +62,7 @@ class InvoiceCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Invoice')
             ->setEntityLabelInPlural('Invoices')
-            ->setDefaultSort(['createdAt' => 'DESC'])
+            ->setDefaultSort(['status' => 'DESC', 'createdAt' => 'DESC'])
             ->setSearchFields(['company.name', 'period.year'])
             ->showEntityActionsInlined(false);
     }
@@ -254,7 +254,7 @@ class InvoiceCrudController extends AbstractCrudController
             $this->mailer->send($email);
             $this->flashbagService->send('invoice_sended', $invoice);
         } else {
-            $this->flashbagService->send('invoice_not_sended', $invoice, 'error');
+            $this->flashbagService->send('invoice_not_sended', $invoice, [], 'danger');
         }
         return $this->redirect($context->getReferrer());
     }

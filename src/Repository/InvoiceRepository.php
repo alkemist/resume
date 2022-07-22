@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Company;
 use App\Entity\Invoice;
+use App\Enum\InvoiceStatusEnum;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
@@ -32,6 +33,7 @@ class InvoiceRepository extends ServiceEntityRepository
         $query = $this->createQueryBuilder('i')
             ->select('ToChar(i.payedAt, \'YYYY\') AS year')
             ->orderBy('year')
+            ->where('i.payedAt IS NOT NULL')
             ->distinct();
 
         return array_map(fn($arr) => $arr['year'], $query->getQuery()->getScalarResult());
@@ -175,12 +177,29 @@ class InvoiceRepository extends ServiceEntityRepository
     public function getDaysCountByMonth(int $year): array
     {
         $query = $this->createQueryBuilder('i')
-            ->select('ToChar(i.payedAt, \'MM\') AS month')
+            ->select('ToChar(i.createdAt, \'MM\') AS month')
             ->addSelect('SUM(i.daysCount) total')
             ->orderBy('month')
             ->groupBy('month');
 
         $query = $this->addFilters($query, $year);
+
+        return array_map(
+            function ($arr) {
+                $arr['total'] = floatval($arr['total']);
+                return $arr;
+            },
+            $query->getQuery()->getResult()
+        );
+    }
+
+    public function getDaysCountByYears(): array
+    {
+        $query = $this->createQueryBuilder('i')
+            ->select('ToChar(i.createdAt, \'YYYY\') AS year')
+            ->addSelect('SUM(i.daysCount) total')
+            ->orderBy('year')
+            ->groupBy('year');
 
         return array_map(
             function ($arr) {
@@ -277,5 +296,19 @@ class InvoiceRepository extends ServiceEntityRepository
     public function isOutOfLimit($newInvoiceAmount = 0): bool
     {
         return ($this->getSalesRevenuesBy() + $newInvoiceAmount) >= Invoice::LIMIT_AE;
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function countWaiting(): int
+    {
+        $query = $this->createQueryBuilder('i')
+            ->select('COUNT(i.id) waitingCount')
+            ->where('i.status = :waiting')
+            ->setParameter('waiting', InvoiceStatusEnum::Waiting);
+
+        return $query->getQuery()->getSingleScalarResult();
     }
 }

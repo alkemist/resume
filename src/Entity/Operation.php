@@ -39,9 +39,9 @@ class Operation
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $location = null;
 
-    public function __construct()
+    public function __toString(): string
     {
-
+        return "$this->name $this->date->format('d/m/Y') $this->amount";
     }
 
     public function getId(): ?int

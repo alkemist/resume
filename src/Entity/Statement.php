@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
@@ -35,10 +36,27 @@ class Statement
     /**
      * @Vich\UploadableField(mapping="statements", fileNameProperty="filename")
      */
-    private File $file;
+    private ?File $file = null;
 
     #[ORM\Column(type: Types::INTEGER, nullable: true)]
     private ?int $operationsCount = null;
+
+    private ?TranslatorInterface $translator = null;
+
+    public function setTranslator(TranslatorInterface $translator): void
+    {
+        $this->translator = $translator;
+    }
+
+    public function __toString(): string
+    {
+        $date = $this->getDate();
+        if ($this->translator) {
+            return $this->translator->trans($date->format('F')) . " " . $date->format('Y');
+        } else {
+            return $date->format('m') . " " . $date->format('Y');
+        }
+    }
 
     public function getId(): ?int
     {
@@ -69,7 +87,7 @@ class Statement
         return $this;
     }
 
-    public function getFile(): File
+    public function getFile(): ?File
     {
         return $this->file;
     }
@@ -87,9 +105,9 @@ class Statement
         }
     }
 
-    public function getOperationsCount(): ?int
+    public function getOperationsCount(): int
     {
-        return $this->operationsCount;
+        return $this->operationsCount ?? 0;
     }
 
     public function setOperationsCount(?int $operationsCount): self

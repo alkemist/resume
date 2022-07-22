@@ -42,7 +42,7 @@ class OperationCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Operation')
             ->setEntityLabelInPlural('Operations')
-            ->setDefaultSort(['date' => 'DESC'])
+            ->setDefaultSort(['type' => 'DESC'])
             ->setSearchFields(['date', 'type', 'label', 'target', 'location', 'amount']);
     }
 

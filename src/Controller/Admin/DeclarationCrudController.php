@@ -60,15 +60,11 @@ class DeclarationCrudController extends AbstractCrudController
             ->displayIf(fn(Declaration $declaration) => $declaration->getStatus() === DeclarationStatusEnum::Waiting)
             ->addCssClass('btn-sm btn-success');
 
-        $actionDelete = Action::new(Action::DELETE, 'Delete', 'fa fa-trash-can')
-            ->displayIf(fn(Declaration $invoice) => $invoice->getStatus() === DeclarationStatusEnum::Waiting)
-            ->linkToCrudAction(Action::DELETE);
-
         $actions
             ->add(Crud::PAGE_INDEX, $validateAction)
             ->add(Crud::PAGE_INDEX, $calculateAction)
             ->remove(Crud::PAGE_INDEX, Action::DELETE)
-            ->add(Crud::PAGE_INDEX, $actionDelete);
+        ;
 
         return $actions;
     }

@@ -215,6 +215,7 @@ Worked days: Jours travaillés
 Revenues by years: CA par années
 Revenues by quarter: CA par trimestre
 Days by month: Journées par mois
+Days by year: Journées par année
 Unpayed invoices: Factures en cours
 Current experiences: Missions en cours
 Global statistics: Statistiques globales
@@ -281,5 +282,5 @@ flash_message:
   invoice_sended: La facture "%entityName%" a été envoyé.
   invoice_not_sended: La facture "%entityName%" n'a pas été envoyé. Pas d'email configuré.
   declaration_calculated: Déclaration "%entityName%" recalculé.
-  operations_analyzed: Les opérations ont été analysées.
-  statement_analyzed: Le relevé a été analyzé.
+  statement_analyzed_success: Le relevé "%entityName%" a été analysé avec %operationsCount% opérations.
+  statement_analyzed_error: Le relevé "%entityName%" a été analysé sans résultats.

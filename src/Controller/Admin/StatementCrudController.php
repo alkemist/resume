@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\Statement;
 use App\Service\FlashbagService;
 use App\Service\StatementService;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -18,13 +19,15 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class StatementCrudController extends AbstractCrudController
 {
     public function __construct(
-        private readonly StatementService $statementService,
-        private readonly FlashbagService  $flashbagService
+        private readonly StatementService    $statementService,
+        private readonly TranslatorInterface $translator,
+        private readonly FlashbagService     $flashbagService
     ) {
     }
 
@@ -86,9 +89,8 @@ class StatementCrudController extends AbstractCrudController
         /** @var Statement $declaration */
         $statement = $context->getEntity()->getInstance();
 
-        $this->statementService->extractOperations($statement);
+        $this->extractWithMessage($statement, true);
 
-        $this->flashbagService->send('statement_analyzed', $declaration);
         return $this->redirect($context->getReferrer());
     }
 
@@ -113,10 +115,50 @@ class StatementCrudController extends AbstractCrudController
      */
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
+        if (!$entityInstance->getDate()) {
+            $matches = [];
+
+            preg_match(
+                '#Extrait de comptes Compte \d+ \d+.. C_C EUROCOMPTE DUO CONFORT M ACHAIN JEREMY au (\d{4}-\d{2}-\d{2})#i',
+                $entityInstance->getFilename(), $matches
+            );
+
+            if (count($matches) === 2) {
+                $entityInstance->setDate(DateTime::createFromFormat('Y-m-d', $matches[1]));
+            } else {
+                $entityInstance->setDate(new DateTime());
+            }
+        }
+
         parent::persistEntity($entityManager, $entityInstance);
 
         if ($entityInstance->getOperationsCount() == 0) {
-            $this->statementService->extractOperations($entityInstance);
+            $this->extractWithMessage($entityInstance, false);
+        }
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     */
+    private function extractWithMessage(Statement $entityInstance, bool $throwError)
+    {
+        $this->statementService->extractOperations($entityInstance, $throwError);
+        $operationCount = $entityInstance->getOperationsCount();
+        $entityInstance->setTranslator($this->translator);
+
+        if ($operationCount === 0) {
+            $this->flashbagService->send(
+                'statement_analyzed_error',
+                $entityInstance,
+                [],
+                'danger'
+            );
+        } else {
+            $this->flashbagService->send(
+                'statement_analyzed_success',
+                $entityInstance,
+                ['%operationsCount%' => $operationCount]
+            );
         }
     }
 }

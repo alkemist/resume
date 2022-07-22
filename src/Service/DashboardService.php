@@ -51,14 +51,6 @@ class DashboardService
             array_map(fn($item) => intval($item['total']), $revenuesByYears)
         );
 
-        $revenuesByQuarters = $this->invoiceRepository->getSalesRevenuesGroupBy(
-            'quarter', $viewData['activeYear'], null, true
-        );
-        $viewData['revenuesByQuarters'] = array_combine(
-            array_map(fn($item) => 'T' . $item['quarter'], $revenuesByQuarters),
-            array_map(fn($item) => intval($item['total']), $revenuesByQuarters)
-        );
-
         $daysByMonthMap = new Map();
         $daysByMonth = $this->invoiceRepository->getDaysCountByMonth($viewData['activeYear']);
         $daysByMonthAssociative = [];
@@ -68,21 +60,21 @@ class DashboardService
         }
         for ($month = 1; $month <= 12; $month++) {
             $monthName = $this->translator->trans(date('F', mktime(0, 0, 0, $month, 10)));
-            $daysByMonthMap->put($monthName, isset($daysByMonthAssociative[$month]) ?? 0);
+            $daysByMonthMap->put($monthName, $daysByMonthAssociative[$month] ?? 0);
             $viewData['colorsByMonths'][] = $month === $viewData['currentMonth'] ? 'rgba(96, 165, 250, 0.6)' : 'rgba(96, 165, 250, 0.2)';
         }
         $viewData['daysByMonth'] = $daysByMonthMap;
 
+        $dayByYears = $this->invoiceRepository->getDaysCountByYears();
+        $daysByYearsAssociative = new Map();
+        foreach ($dayByYears as $item) {
+            $daysByYearsAssociative->put(intval($item['year']), $item['total']);
+        }
+        $viewData['daysByYears'] = $daysByYearsAssociative;
+
         $viewData['colorsByYears'] = [];
         foreach ($viewData['years'] as $year) {
             $viewData['colorsByYears'][] = $year == $viewData['activeYear'] ? 'rgba(96, 165, 250, 0.6)' : 'rgba(96, 165, 250, 0.2)';
-        }
-
-        $viewData['colorsByQuarters'] = [];
-        foreach ($viewData['revenuesByQuarters'] as $quarter => $item) {
-            if (isset($quarter[1])) {
-                $viewData['colorsByQuarters'][] = $quarter[1] == $viewData['currentQuarter'] ? 'rgba(96, 165, 250, 0.6)' : 'rgba(96, 165, 250, 0.2)';
-            }
         }
 
         $viewData['nextDueDate'] = $this->declarationService->getNextDueDate();
@@ -124,33 +116,31 @@ class DashboardService
                                        ]);
         $viewData['chartRevenuesByYears'] = $chartRevenuesByYears;
 
-        $chartRevenuesByQuarters = $this->chartBuilder->createChart(Chart::TYPE_BAR);
-        $chartRevenuesByQuarters->setData([
-                                              'labels'   => array_keys($viewData['revenuesByQuarters']),
-                                              'datasets' => [
-                                                  [
-                                                      'label'           => 'CA (€)',
-                                                      'backgroundColor' => array_values($viewData['colorsByQuarters']),
-                                                      'data'            => array_values(
-                                                          $viewData['revenuesByQuarters']
-                                                      ),
-                                                  ],
-                                              ],
-                                          ]);
-        $viewData['chartRevenuesByQuarters'] = $chartRevenuesByQuarters;
-
         $chartDaysByMonth = $this->chartBuilder->createChart(Chart::TYPE_BAR);
         $chartDaysByMonth->setData([
                                        'labels'   => $viewData['daysByMonth']->keys(),
                                        'datasets' => [
                                            [
-                                               'label'           => 'jours (€)',
+                                               'label'           => 'jours',
                                                'backgroundColor' => array_values($viewData['colorsByMonths']),
                                                'data'            => $viewData['daysByMonth']->values(),
                                            ],
                                        ],
                                    ]);
         $viewData['chartDaysByMonth'] = $chartDaysByMonth;
+
+        $chartDaysByYears = $this->chartBuilder->createChart(Chart::TYPE_BAR);
+        $chartDaysByYears->setData([
+                                       'labels'   => $viewData['daysByYears']->keys(),
+                                       'datasets' => [
+                                           [
+                                               'label'           => 'jours',
+                                               'backgroundColor' => array_values($viewData['colorsByYears']),
+                                               'data'            => $viewData['daysByYears']->values(),
+                                           ],
+                                       ],
+                                   ]);
+        $viewData['chartDaysByYears'] = $chartDaysByYears;
 
         return $viewData;
     }

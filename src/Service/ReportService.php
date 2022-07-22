@@ -90,13 +90,13 @@ class ReportService
     ): array {
         $viewData['daysCount'] = $currentDate->format('t');
         $viewData['years'] = $this->invoiceRepository->findYears();
+
         if (!in_array($viewData['activeYear'], $viewData['years'])) {
             $viewData['years'][] = $viewData['activeYear'];
         }
         if (!in_array($viewData['currentYear'], $viewData['years'])) {
             $viewData['years'][] = $viewData['currentYear'];
         }
-
 
         $viewData['months'] = [];
         for ($i = 1; $i <= 12; $i++) {

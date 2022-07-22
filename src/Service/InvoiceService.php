@@ -33,6 +33,15 @@ class InvoiceService
     }
 
     /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function countWaitingInvoices(): int
+    {
+        return $this->invoiceRepository->countWaiting();
+    }
+
+    /**
      * Crée ou récupère le fichier pdf actuellement stocké
      * @throws Exception
      */

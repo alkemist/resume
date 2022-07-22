@@ -10,11 +10,14 @@ use EasyCorp\Bundle\EasyAdminBundle\Event\AfterEntityPersistedEvent;
 use EasyCorp\Bundle\EasyAdminBundle\Event\AfterEntityUpdatedEvent;
 use JetBrains\PhpStorm\ArrayShape;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class EasyAdminListener implements EventSubscriberInterface
 {
-    public function __construct(private readonly FlashbagService $flashbagService)
-    {
+    public function __construct(
+        private readonly FlashbagService     $flashbagService,
+        private readonly TranslatorInterface $translator
+    ) {
     }
 
     #[ArrayShape([AfterEntityPersistedEvent::class => "string[]", AfterEntityUpdatedEvent::class => "string[]", AfterEntityDeletedEvent::class => "string[]"])]
@@ -29,16 +32,28 @@ final class EasyAdminListener implements EventSubscriberInterface
 
     public function flashMessageAfterPersist(AfterEntityPersistedEvent $event): void
     {
-        $this->flashbagService->send('create', $event->getEntityInstance());
+        $entityInstance = $event->getEntityInstance();
+        if (method_exists($entityInstance, 'setTranslator')) {
+            $entityInstance->setTranslator($this->translator);
+        }
+        $this->flashbagService->send('create', $entityInstance);
     }
 
     public function flashMessageAfterUpdate(AfterEntityUpdatedEvent $event): void
     {
-        $this->flashbagService->send('update', $event->getEntityInstance());
+        $entityInstance = $event->getEntityInstance();
+        if (method_exists($entityInstance, 'setTranslator')) {
+            $entityInstance->setTranslator($this->translator);
+        }
+        $this->flashbagService->send('update', $entityInstance);
     }
 
     public function flashMessageAfterDelete(AfterEntityDeletedEvent $event): void
     {
-        $this->flashbagService->send('delete', $event->getEntityInstance());
+        $entityInstance = $event->getEntityInstance();
+        if (method_exists($entityInstance, 'setTranslator')) {
+            $entityInstance->setTranslator($this->translator);
+        }
+        $this->flashbagService->send('delete', $entityInstance);
     }
 }
