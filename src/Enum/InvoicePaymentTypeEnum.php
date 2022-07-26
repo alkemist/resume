@@ -2,6 +2,8 @@
 
 namespace App\Enum;
 
+use Traversable;
+
 enum InvoicePaymentTypeEnum: string
 {
     case Check = 'check';
@@ -20,7 +22,7 @@ enum InvoicePaymentTypeEnum: string
         };
     }
 
-    public static function choices(): iterable
+    public static function choices(): Traversable
     {
         foreach (self::cases() as $case) {
             yield $case->value => $case->toString();

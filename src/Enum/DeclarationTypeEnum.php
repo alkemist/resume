@@ -2,6 +2,8 @@
 
 namespace App\Enum;
 
+use Traversable;
+
 enum DeclarationTypeEnum: string
 {
     case TVA = 'tva';
@@ -24,7 +26,7 @@ enum DeclarationTypeEnum: string
         };
     }
 
-    public static function choices(): iterable
+    public static function choices(): Traversable
     {
         foreach (self::cases() as $case) {
             yield $case->value => $case->toString();

@@ -3,6 +3,7 @@
 namespace App\Enum;
 
 use JsonSerializable;
+use Traversable;
 
 enum OperationTypeEnum: string implements JsonSerializable
 {
@@ -36,7 +37,7 @@ enum OperationTypeEnum: string implements JsonSerializable
         };
     }
 
-    public static function choices(): iterable
+    public static function choices(): Traversable
     {
         foreach (self::cases() as $case) {
             yield $case->value => $case->toString();

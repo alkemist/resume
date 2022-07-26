@@ -86,7 +86,8 @@
         "symfony/polyfill-php80": "*"
     },
     "scripts": {
-        "server:start": "symfony server:start",
+        "deploy": "platform deploy",
+        "server": "symfony server:start",
         "rector": "vendor/bin/rector process",
         "crud": "bin/console make:admin:crud",
         "auto-scripts": {

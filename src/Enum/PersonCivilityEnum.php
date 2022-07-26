@@ -2,6 +2,8 @@
 
 namespace App\Enum;
 
+use Traversable;
+
 enum PersonCivilityEnum: string
 {
     case Men = 'h';
@@ -20,7 +22,7 @@ enum PersonCivilityEnum: string
         };
     }
 
-    public static function choices(): iterable
+    public static function choices(): Traversable
     {
         foreach (self::cases() as $case) {
             yield $case->value => $case->toString();

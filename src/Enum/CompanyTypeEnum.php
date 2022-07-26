@@ -3,6 +3,7 @@
 namespace App\Enum;
 
 use JsonSerializable;
+use Traversable;
 
 enum CompanyTypeEnum: string implements JsonSerializable
 {
@@ -28,7 +29,7 @@ enum CompanyTypeEnum: string implements JsonSerializable
         };
     }
 
-    public static function choices(): iterable
+    public static function choices(): Traversable
     {
         foreach (self::cases() as $case) {
             yield $case->value => $case->toString();

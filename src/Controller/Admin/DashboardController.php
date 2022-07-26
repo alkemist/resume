@@ -97,6 +97,13 @@ class DashboardController extends AbstractDashboardController
         return $this->render('admin/report.html.twig', $viewData);
     }
 
+    #[Route('/admin/accounting/{year<\d+>?0}/{type<\w+>?}', name: 'accounting')]
+    public function accouting(int $year = 0, $type = ''): Response
+    {
+        $viewData = $this->accountingService->getDashboard($year, $type);
+        return $this->render('admin/accounting.html.twig', $viewData);
+    }
+
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
@@ -121,9 +128,9 @@ class DashboardController extends AbstractDashboardController
     {
         yield MenuItem::linkToUrl('Return to website', 'fa fa-arrow-left', '/');
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-chart-bar');
-        yield MenuItem::linkToRoute('Report', 'fa fa-fw fa-calendar-alt', 'report');
 
         yield MenuItem::section('Invoicing');
+        yield MenuItem::linkToRoute('Report', 'fa fa-calendar-alt', 'report');
         yield MenuItem::linkToCrud('Invoices', 'fa fa-coins', Invoice::class)
             ->setBadge($this->invoiceService->countWaitingInvoices());
         yield MenuItem::linkToCrud('Declarations', 'fa fa-landmark', Declaration::class);
@@ -142,6 +149,7 @@ class DashboardController extends AbstractDashboardController
 
         yield MenuItem::section('Accounting');
 
+        yield MenuItem::linkToRoute('Dashboard', 'fa fa-chart-pie', 'accounting');
         yield MenuItem::linkToCrud('Statements', 'fa fa-file-alt', Statement::class);
         yield MenuItem::linkToCrud('Operations', 'fa fa-columns', Operation::class)
             ->setBadge($this->accountingService->getNullTypesCount());
@@ -160,10 +168,13 @@ class DashboardController extends AbstractDashboardController
             ->add(Crud::PAGE_NEW, Action::INDEX)
             ->add(Crud::PAGE_EDIT, Action::INDEX)
             ->add(Crud::PAGE_EDIT, Action::DELETE)
+
             ->remove(Crud::PAGE_INDEX, Action::EDIT)
             ->add(Crud::PAGE_INDEX, $editAction)
+
             ->remove(Crud::PAGE_INDEX, Action::DELETE)
             ->add(Crud::PAGE_INDEX, $actionDelete)
+
             ->disable(Action::BATCH_DELETE);
     }
 

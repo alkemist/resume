@@ -17,7 +17,7 @@
   text-align: right;
 }
 
-#dashboard, #report {
+.dashboard {
   .container {
     max-width: none;
   }
@@ -34,7 +34,7 @@
           flex: 1;
           padding: 10px;
 
-          &:hover {
+          &:hover, &.active {
             background-color: rgba(0, 0, 0, 0.8);
           }
         }

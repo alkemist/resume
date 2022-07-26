@@ -4,6 +4,8 @@ namespace App\Enum;
 
 use JsonSerializable;
 
+use Traversable;
+
 enum SkillTypeEnum: string implements JsonSerializable
 {
     case Software = 'software';
@@ -30,7 +32,7 @@ enum SkillTypeEnum: string implements JsonSerializable
         };
     }
 
-    public static function choices(): iterable
+    public static function choices(): Traversable
     {
         foreach (self::cases() as $case) {
             yield $case->value => $case->toString();
