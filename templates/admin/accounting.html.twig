@@ -1,0 +1,63 @@
+{% set active_route = 'accounting' %}
+{% set active_params = app.request.attributes.get('_route_params') | default([]) %}
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block page_title %}{{ 'Dashboard' | trans }}{% endblock %}
+
+{% block main %}
+    <div id="accounting" class="dashboard">
+        <div id="navigation" class="container text-center">
+            <div class="row align-items-center">
+                {% for year in years %}
+                    <div class="col">
+                        <a class="{% if year == activeYear %}active{% endif %}"
+                           href="{{ url(active_route, (active_params | merge(year == activeYear ? {'year' : 0} : {'year' : year}))) }}">{{ year }}</a>
+                    </div>
+                {% endfor %}
+            </div>
+            {% if months is defined %}
+                <div class="row align-items-center">
+                    {% for month in months %}
+                        <div class="col">
+                            <a class="{% if month['int'] == activeMonth %}active{% endif %}"
+                               href="{{ url(active_route, (active_params | merge(month['int'] == activeMonth ? {'month' : 0} : {'month' : month['int']}))) }}">{{ month['str'] }}</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div class="row align-items-center">
+                {% for typeKey, typeValue in types %}
+                    <div class="col">
+                        <a class="{% if typeKey == activeType %}active{% endif %}"
+                           href="{{ url(active_route, (active_params | merge(typeKey == activeType ? {'type' : 0} : {'type' : typeKey}))) }}">{{ typeValue | trans }}</a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="container text-center">
+            {% if activeYear == null %}
+                <div class="row align-items-center" style="margin-top: 40px;">
+                    {{ render_chart(chartTotalsByYear, {'id' : 'totalsByYear'}) }}
+                </div>
+            {% endif %}
+            <div class="row align-items-center" style="margin-top: 40px;">
+                {{ render_chart(chartTotalsByMonthAndType, {'id' : 'totalsByMonthAndType'}) }}
+            </div>
+            {% if chartTotalsByMonthAndLabel is defined %}
+                <div class="row align-items-center" style="margin-top: 40px;">
+                    {{ render_chart(chartTotalsByMonthAndLabel, {'id' : 'totalsByMonthAndLabel'}) }}
+                </div>
+            {% endif %}
+            {% if chartTotalsByLabel is defined %}
+                <div class="row align-items-center" style="margin-top: 40px;">
+                    {{ render_chart(chartTotalsByLabel, {'id' : 'totalsByLabel'}) }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_javascript %}
+    {{ encore_entry_script_tags('app-chartjs-plugins') }}
+{% endblock %}

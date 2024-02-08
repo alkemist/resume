@@ -1,0 +1,340 @@
+Web Developer: Développeur Web
+Return to website: Retour sur le site web
+Logout: Se deconnecter
+Informations: Informations
+
+Update: Mettre à jour
+Edit: Éditer
+Delete: Supprimer
+Download: Télécharger
+
+Attribute: Attribut
+Attributes: Attributs
+ID: "#"
+Slug: Slug
+Icon: Icone
+Value: Valeur
+Weight: Poids
+Age: '{age} ans'
+Is Listable: Est listable
+
+Education: Formation
+Educations: Formations
+Name: Nom
+School: Ecole
+Details: Détails
+Date Begin: Date de début
+Date End: Date de fin
+Dates: Dates
+
+Experience: Experience
+Experiences: Experiences
+Main experiences: Principales experiences
+Title: Titre
+Description: Description
+Is Freelance: Freelance
+Freelance: Freelance
+Employee: Employé
+On Site: Sur place
+On Homepage: Page d'accueil
+Options: Options
+Invoicing: Facturation
+in progress: en cours
+today: aujourd'hui
+Mission: Mission
+Parameters: Paramètres
+
+Company: Entreprise
+Companies: Entreprises
+Location: Localisation
+Client: Client
+Clients: Clients
+Contractor: Prestataire
+Display Name: Nom personnalisé
+Address: Adresse
+Service: Service
+Street: Rue
+Postal Code: Code postal
+City: Ville
+Principal: Principal
+Hierarchy: Hierarchie
+Last experience: Dernière expérience
+Notes: Notes
+Prospect: Prospect
+Archive: Archive
+ESN: ESN
+
+Person: Personne
+Persons: Personnes
+Civility: Civilité
+Firstname: Prénom
+Lastname: Nom
+Email: Email
+Emails: Emails
+Copy email: Email de copie
+Copy email bis: Email de copie
+Phones: Téléphones
+Is Invoicing Default: Gère la facturation
+Is invoicing default: Gère la facturation
+Men: M
+Women: Mme
+
+Invoice: Facture
+Invoices: Factures
+Check: Chèque
+Transfert: Virement
+Tjm: TJM
+Object: Objet
+References: Références
+Reference: Référence
+Total: Total
+Total Ht: Total HT
+Total Net: Total net
+Total Tax: Total TVA
+Total Ttc: Total TTC
+Created At: Créé le
+Created At year: Créé l'année
+Created At quarter: Créé le trimestre
+Created At month: Créé le mois
+Payed At: Payé le
+Payed At year: Payé l'année
+Payed At quarter: Payé le trimestre
+Payed By: Payé par
+Number: Numéro
+Status: Statut
+Draft: Brouillon
+draft: Brouillon
+Valid: Validé
+valid: Validé
+Waiting: En attente
+waiting: En attente
+Sent: Envoyé
+sent: Envoyé
+Payed: Encaissé
+payed: Encaissé
+Marqued as payed: Marquer comme payé
+Credit: Avoir
+Days Count: Jours
+Payment: Paiement
+Pdf: Pdf
+30 days end of month: 30 jours fin du mois
+Validate: Valider
+Due Interval: Intervalle de paiement
+Calculated: Calculé
+Invoices book: Livre des recettes
+Extra Ht: Extra HT
+Extra Libelle: Extra libellé
+Extra: Extra
+
+Activities: Journées
+Activity: Journée
+
+Hobby: Loisir
+Hobbies: Loisirs
+
+Link: Lien
+Links: Liens
+Url: URL
+
+Skill: Compétence
+Skills: Compétences
+Main Skills: Compétences principales
+Type: Type
+Level: Niveau
+Parent: Parent
+Children: Enfants
+Software: Logiciel
+Framework: Framework
+Platform: Platforme
+Language: Langage
+Version: Version
+OS: OS
+
+Declaration: Déclaration
+Declarations: Déclarations
+Tax: Charges
+Revenue: Chiffre d'affaire
+DeclarationTva: Déclaration TVA
+DeclarationSocial: Déclaration Social
+DeclarationImpot: Déclaration Impôt
+Next declaration: Prochaine déclaration
+Quarter: Trimestre
+Rate: Taux
+Recalculate: Recalculer
+Social: Social
+social: Social
+Impot: Impôt
+impot: Impôt
+Tva: TVA
+TVA: TVA
+tva: TVA
+CFE: CFE
+Cfe: CFE
+cfe: CFE
+
+Period: Période
+Periods: Périodes
+
+Purchase: Achat
+Purchases: Achats
+Proof: Justificatif
+Proof file: Justificatif
+Ocr: OCR
+Proof data: Données du justificatif
+
+Date: Date
+Year: Année
+Trimestre: Trimestre
+Week: Semaine
+Month: Mois
+Day: Journée
+Days: Journées
+January: Janvier
+February: Fevrier
+March: Mars
+April: Avril
+May: Mai
+June: Juin
+July: Juillet
+August: Aout
+September: Septembre
+October: Octobre
+November: Novembre
+December: Decembre
+Monday: Lundi
+Tuesday: Mardi
+Wednesday: Mercredi
+Thursday: Jeudi
+Friday: Vendredi
+Saturday: Samedi
+Sunday: Dimanche
+
+Annual income: CA de l'année
+Quarterly income: CA du trimestre
+Days remaining before taxes: Jours restant avant TVA
+Quarterly taxes: TVA du trimestre
+Days remaining: Jours restant
+Worked days: Jours travaillés
+Revenues by years: CA par années
+Revenues by quarter: CA par trimestre
+Days by month: Journées par mois
+Days by year: Journées par année
+Unpayed invoices: Factures en cours
+Current experiences: Missions en cours
+Global statistics: Statistiques globales
+
+Home: Acceuil
+Dashboard: Tableau de bord
+Report: Rapport d'activité
+Resume: CV
+Export: Export
+Other: Autre
+Send: Envoyer
+Message: Message
+Actions: Actions
+
+Login: Identification
+Username: Nom d'utilisateur
+Password: Mot de passe
+Connexion: Connexion
+Captcha: Captcha
+New message: Nouveau message
+Message sended: Message envoyé
+Notifications: Notifications
+
+OperationFilter: Filtre
+OperationFilters: Filtres
+Has Duplicate: Autoriser les doublons
+Filters: Filtres
+Filter: Filtre
+Accounting: Comptabilité
+Operation: Opération
+Operations: Opérations
+Statement: Relevé
+Statements: Relevés
+Start Amount: Départ
+End Amount: Fin
+Gap Amount: Différence
+Saving: Economies
+Saving Amount: Economies
+Filename: Nom du fichier
+File: Fichier
+Data: Données
+Amount: Montant
+Target: Cible
+Analyze: Analyse
+Label: Catégorie
+Statistiques: Statistiques
+Categories: Catégories
+Label Autocomplete: Catégorie existante
+Label Custom: Catégorie personnalisée
+
+Project: Projet
+Projects: Projets
+Source Url: Source
+Website Url: Site web
+
+Supply: Fourniture
+supply: Fourniture
+Food: Nourriture
+food: Nourriture
+Charge: Charge
+charge: Charge
+Subscription: Abonnement
+subscription: Abonnement
+Income: Revenu
+income: Revenu
+Refund: Remboursement
+refund: Remboursement
+Hidden: Caché
+hidden: Caché
+other: Autre
+hobby: Loisir
+
+Consumption: Consommation
+Consumptions: Consommations
+ConsumptionMonth: Mois de consommation
+ConsumptionMonths: Mois de consommation
+ConsumptionStatement: Relevé de consommation
+ConsumptionStatements: Relevés de consommation
+Low Hour: Heure creuse
+Full Hour: Heure pleine
+Weekend Hour: Heure Weekend
+Meter Low Hour: Relevé heure creuse
+Meter Full Hour: H. pleine
+Meter Weekend Hour: H. Weekend
+Diff Low Hour: Conso heure creuse
+Diff Full Hour: H. pleine
+Diff Weekend Hour: H. Weekend
+Consumption Month: Mois
+Diff Total: Total
+Start Date: Début
+End Date: Fin
+
+Authentication: Authentification
+WebAuthn: WebAuthn
+Users: Utilisateurs
+User: Utilisateur
+Add key: Ajouter une clef
+Roles: Groupes
+Key: Clef
+Keys: Clefs
+
+vich_uploader:
+  form_label:
+    delete_confirm: Supprimer ?
+
+flash_message:
+  create: L'objet "%entityType% %entityName%" a été créé.
+  update: L'objet "%entityType% %entityName%" a été mis à jour.
+  delete: L'objet "%entityType% %entityName%" a été supprimé.
+  mark_as_waiting: La facture "%entityName%" a été marqué comme "en attente".
+  mark_as_payed: La facture "%entityName%" a été marqué comme "payé".
+  invoice_sended: La facture "%entityName%" a été envoyé.
+  invoice_not_sended: La facture "%entityName%" n'a pas été envoyé. Pas d'email configuré.
+  invoice_not_editable: La facture "%entityName%" n'est plus éditable.
+  declaration_calculated: Déclaration "%entityName%" recalculé.
+  statement_analyzed_success: Le relevé "%entityName%" a été analysé avec %operationsCount% opérations.
+  statement_analyzed_error: Le relevé "%entityName%" a été analysé sans résultats.
+  operations_analyzed: Les opérations ont été analysés.
+  consumptions_analyzed_success: Le relevé "%entityName%" a été analysé avec %count% consommations.

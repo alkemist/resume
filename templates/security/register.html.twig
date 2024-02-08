@@ -1,0 +1,23 @@
+{% set active_route = 'register' %}
+{% set active_params = app.request.attributes.get('_route_params') | default([]) %}
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block stylesheets %}
+{% endblock %}
+
+{% block content_title %}
+    {{ 'Add key' | trans }}
+{% endblock %}
+
+{% block page_actions %}
+
+{% endblock %}
+
+{% block main %}
+    {{ encore_entry_script_tags('js/register') }}
+    <div style="padding:20px;" class="webauthn-data"
+         data-user="{{ user|serialize(format = 'json') }}" data-callback-url="{{ callbackUrl }}"
+    >
+
+    </div>
+{% endblock %}

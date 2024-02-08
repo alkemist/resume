@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'Login' | trans }}{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{{ asset('build/css/login.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {{ encore_entry_script_tags('js/login') }}
+{% endblock %}
+
+{% block body %}
+    <div>
+        {% if error %}
+            <div class="alert alert-danger">
+                <ul class="list-unstyled mb-0">
+                    <li>
+                        <span class="form-error-message">{{ error.messageKey|trans(error.messageData, 'security') }}</span>
+                    </li>
+                </ul>
+            </div>
+        {% endif %}
+
+        {{ form(form, { 'attr': {'class': enableWebAuthn ? 'webauthn-form' : ''}}) }}
+
+        <div style="padding: 20px" class="alert alert-danger inline webauthn-data"
+             data-callback-url="{{ callbackUrl }}"
+             data-email-field="{{ emailField }}"
+        ></div>
+    </div>
+{% endblock %}
