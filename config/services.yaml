@@ -6,8 +6,9 @@
 parameters:
   APP_ENV: '%env(APP_ENV)%'
   APP_DIR: '%kernel.project_dir%'
+  CV_FILENAME: '%env(CV_FILENAME)%'
   MAILER_SUBJECT: '%env(MAILER_SUBJECT)%'
-  MAILER_FILE: '%env(MAILER_FILE)%'
+  MAILER_FILENAME: '%env(MAILER_FILENAME)%'
   MAILER_FROM: '%env(MAILER_FROM)%'
   MAILER_CC: '%env(MAILER_CC)%'
   MAILER_REPLY: '%env(MAILER_REPLY)%'

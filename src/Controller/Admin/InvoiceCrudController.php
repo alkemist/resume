@@ -286,7 +286,7 @@ class InvoiceCrudController extends BaseAdminCrudController
                 )
                 ->attachFromPath(
                     $this->getParameter('PDF_DIRECTORY') . $invoice->getFilename(),
-                    $this->getParameter('MAILER_FILE').'-' . $invoice->getNumber() . '.pdf'
+                    $this->getParameter('MAILER_FILENAME').'-' . $invoice->getNumber() . '.pdf'
                 );
 
             if ($this->getParameter('APP_ENV') === 'prod') {

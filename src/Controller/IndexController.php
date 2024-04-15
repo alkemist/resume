@@ -50,7 +50,7 @@ class IndexController extends AbstractController
             'format'              => $format,
             'all'                 => $all,
             'contactForm'         => $form->createView(),
-            'filename'            => 'jeremy-achain-cv',
+            'filename'            => $this->getParameter('CV_FILENAME'),
             'messageSended'       => $request->get('messageSended')
         ];
 
