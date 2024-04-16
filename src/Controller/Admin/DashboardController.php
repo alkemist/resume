@@ -20,8 +20,6 @@ use App\Entity\Project;
 use App\Entity\Skill;
 use App\Entity\Statement;
 use App\Entity\User;
-use App\Entity\WebAuthnKey;
-use App\Entity\WebAuthnUser;
 use App\Form\Type\MonthActivitiesType;
 use App\Service\AccountingService;
 use App\Service\ConsumptionService;
@@ -29,7 +27,6 @@ use App\Service\DashboardService;
 use App\Service\InvoiceService;
 use App\Service\ReportService;
 use App\Service\StatementService;
-use App\Service\UserService;
 use DateTime;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -46,7 +43,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Webauthn\Exception\InvalidDataException;
 
 class DashboardController extends AbstractDashboardController
 {
@@ -57,16 +53,14 @@ class DashboardController extends AbstractDashboardController
         private readonly StatementService   $statementService,
         private readonly InvoiceService     $invoiceService,
         private readonly ConsumptionService $consumptionService,
-        private readonly UserService        $userService
-    )
-    {
+    ) {
     }
 
     /**
      * @throws NonUniqueResultException
      * @throws NoResultException
      */
-    #[Route('/admin/{year<\d+>?0}', name: 'dashboard')]
+    #[Route('/admin/{year<\d+>?0}', name: 'admin_dashboard')]
     public function dashboard(int $year = 0): Response
     {
         $viewData = $this->dashboardService->getDashboard($year);
@@ -79,7 +73,7 @@ class DashboardController extends AbstractDashboardController
      * @throws NoResultException
      * @throws Exception
      */
-    #[Route('/admin/report/{year<\d+>?0}/{month<\d+>?0}/{slug?}', name: 'report')]
+    #[Route('/admin/report/{year<\d+>?0}/{month<\d+>?0}/{slug?}', name: 'admin_report')]
     public function report(Request $request, int $year = 0, int $month = 0, Company $company = null): Response
     {
         $viewData = [];
@@ -93,9 +87,9 @@ class DashboardController extends AbstractDashboardController
         $viewData = $this->reportService->getDashboard($viewData, clone $currentDate, $year, $month, $company);
 
         $form = $this->createForm(MonthActivitiesType::class, null, [
-            'activities' => $viewData['companyActivities'],
+            'activities'  => $viewData['companyActivities'],
             'currentDate' => clone $currentDate,
-            'company' => $viewData['activeCompany']
+            'company'     => $viewData['activeCompany']
         ]);
         $form->handleRequest($request);
         $viewData['reportForm'] = $form->createView();
@@ -103,11 +97,11 @@ class DashboardController extends AbstractDashboardController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->reportService->sendActivities($form->getData(), $currentDate);
             return $this->redirectToRoute(
-                'report',
+                'admin_report',
                 [
-                    'year' => $viewData['activeYear'],
+                    'year'  => $viewData['activeYear'],
                     'month' => $viewData['activeMonth'],
-                    'slug' => $viewData['activeCompany'] ? $viewData['activeCompany']->getSlug() : ''
+                    'slug'  => $viewData['activeCompany'] ? $viewData['activeCompany']->getSlug() : ''
                 ]
             );
         }
@@ -118,7 +112,7 @@ class DashboardController extends AbstractDashboardController
     /**
      * @throws Exception
      */
-    #[Route('/admin/accounting/{year<\d+>?0}/{month<\d+>?0}/{type<\w+>?}', name: 'accounting')]
+    #[Route('/admin/accounting/{year<\d+>?0}/{month<\d+>?0}/{type<\w+>?}', name: 'admin_accounting')]
     public function accouting(int $year = 0, int $month = 0, $type = ''): Response
     {
         $viewData = $this->accountingService->getDashboard($year, $month, $type);
@@ -128,14 +122,14 @@ class DashboardController extends AbstractDashboardController
     /**
      * @throws Exception
      */
-    #[Route('/admin/consumption/{year<\d+>?0}/{month<\d+>?0}/{type<\w+>?}', name: 'consumption')]
+    #[Route('/admin/consumption/{year<\d+>?0}/{month<\d+>?0}/{type<\w+>?}', name: 'admin_consumption')]
     public function consumption(int $year = 0, int $month = 0, $type = ''): Response
     {
         $viewData = $this->consumptionService->getDashboard($year, $month, $type);
         return $this->render('admin/consumption.html.twig', $viewData);
     }
 
-    #[Route('/admin/saving/{year<\d+>?0}', name: 'saving')]
+    #[Route('/admin/saving/{year<\d+>?0}', name: 'admin_saving')]
     public function saving(int $year = 0): Response
     {
         $viewData = $this->statementService->getDashboard($year);
@@ -172,7 +166,7 @@ class DashboardController extends AbstractDashboardController
 
         yield MenuItem::section('Invoicing');
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-chart-bar');
-        yield MenuItem::linkToRoute('Report', 'fa fa-calendar-alt', 'report');
+        yield MenuItem::linkToRoute('Report', 'fa fa-calendar-alt', 'admin_report');
         yield MenuItem::linkToCrud('Invoices', 'fa fa-coins', Invoice::class)
             ->setBadge($countWaitingInvoices > 0 ? $countWaitingInvoices : '');
         yield MenuItem::linkToCrud('Declarations', 'fa fa-landmark', Declaration::class);
@@ -190,8 +184,8 @@ class DashboardController extends AbstractDashboardController
 
         yield MenuItem::section('Accounting');
 
-        yield MenuItem::linkToRoute('Dashboard', 'fa fa-chart-pie', 'accounting');
-        yield MenuItem::linkToRoute('Saving', 'fa fa-vault', 'saving');
+        yield MenuItem::linkToRoute('Dashboard', 'fa fa-chart-pie', 'admin_accounting');
+        yield MenuItem::linkToRoute('Saving', 'fa fa-vault', 'admin_saving');
         yield MenuItem::linkToCrud('Statements', 'fa fa-file-alt', Statement::class)
             ->setBadge($countNoOcr > 0 ? $countNoOcr : '');
         yield MenuItem::linkToCrud('Operations', 'fa fa-columns', Operation::class)
@@ -200,15 +194,13 @@ class DashboardController extends AbstractDashboardController
 
         yield MenuItem::section('Consumption');
 
-        yield MenuItem::linkToRoute('Dashboard', 'fa fa-chart-pie', 'consumption');
+        yield MenuItem::linkToRoute('Dashboard', 'fa fa-chart-pie', 'admin_consumption');
         yield MenuItem::linkToCrud('ConsumptionStatements', 'fa fa-file', ConsumptionStatement::class);
         yield MenuItem::linkToCrud('ConsumptionMonths', 'fa fa-calendar-days', ConsumptionMonth::class);
         yield MenuItem::linkToCrud('Consumptions', 'fa fa-bolt', Consumption::class);
 
         yield MenuItem::section('Authentication');
-        yield MenuItem::linkToCrud('Users', 'fa fa-user', WebAuthnUser::class);
-        yield MenuItem::linkToCrud('Keys', 'fa fa-key', WebAuthnKey::class);
-        yield MenuItem::linkToRoute('Add key', 'fa fa-user-plus', 'register');
+        yield MenuItem::linkToCrud('Users', 'fa fa-user', User::class);
     }
 
     public function configureActions(): Actions
@@ -252,19 +244,5 @@ class DashboardController extends AbstractDashboardController
     {
         return Assets::new()
             ->addCssFile('build/css/admin.css');
-    }
-
-
-    /**
-     * @throws InvalidDataException
-     * @throws NonUniqueResultException
-     */
-    #[Route('/admin/register', name: 'register')]
-    public function register(Request $request): Response
-    {
-        Assets::new()
-            ->addJsFile('build/js/register.js');
-
-        return $this->render('security/register.html.twig', $this->userService->getMetadata());
     }
 }

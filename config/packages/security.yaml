@@ -14,10 +14,6 @@ security:
       entity:
         class: App\Entity\User
         property: email
-    webauthn:
-      entity:
-        class: App\Entity\WebAuthnUser
-        property: name
 
   firewalls:
     dev:
@@ -25,32 +21,24 @@ security:
       security: false
     secured_area:
       pattern: ^/
-      provider: password
-      #provider: webauthn
-      webauthn:
-        authentication:
-          routes:
-            result_path: '/api/authenticate'
-            options_path: '/api/authenticate/options'
-        registration:
-          routes:
-            result_path: '/api/register'
-            options_path: '/api/register/options'
-      form_login:
-        login_path: login
-        check_path: login
-        enable_csrf: false # a activer
-        default_target_path: /admin
-        use_referer: true
-        username_parameter: "login[_username]"
-        password_parameter: "login[_password]"
-        csrf_parameter: "login[_token]"
+      #provider: password
+      custom_authenticators:
+        - App\Security\StoreAuthenticator
+      #      form_login:
+      #        login_path: login
+      #        check_path: login
+      #        enable_csrf: false # a activer
+      #        default_target_path: /admin
+      #        use_referer: true
+      #        username_parameter: "login[_username]"
+      #        password_parameter: "login[_password]"
+      #        csrf_parameter: "login[_token]"
       logout:
         path: logout
         target: /
 
   access_control:
-    - { path: ^/admin, roles: [ ROLE_ADMIN, IS_USER_VERIFIED ] }
+    - { path: ^/admin, roles: [ ROLE_ADMIN ] }
     - { path: ^/login,  roles: [ PUBLIC_ACCESS ], requires_channel: 'https' }
     - { path: ^/, roles: [ PUBLIC_ACCESS ] }
 
@@ -66,12 +54,3 @@ when@test:
         cost: 4 # Lowest possible value for bcrypt
         time_cost: 3 # Lowest possible value for argon
         memory_cost: 10 # Lowest possible value for argon
-
-when@dev:
-  security:
-    firewalls:
-      secured_area:
-        webauthn:
-          secured_rp_ids:
-            - 'localhost'
-            - '192.168.0.76'

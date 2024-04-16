@@ -48,8 +48,12 @@ class User implements UserInterface, Stringable, PasswordAuthenticatedUserInterf
     #[ORM\Column(name: 'roles', type: 'array')]
     private array $roles = [];
 
-    public function __construct()
+    public function __construct($id = null)
     {
+        if ($id) {
+            $this->id = $id;
+        }
+
         $this->isActive = false;
         $this->salt = md5(uniqid('', true));
     }
@@ -172,7 +176,7 @@ class User implements UserInterface, Stringable, PasswordAuthenticatedUserInterf
     public function __serialize(): array
     {
         return [
-            'id' => $this->id,
+            'id'       => $this->id,
             'username' => $this->username,
         ];
     }

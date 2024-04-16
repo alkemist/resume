@@ -12,7 +12,6 @@
     "doctrine/doctrine-bundle": "^2.8",
     "doctrine/orm": "^2.12",
     "easycorp/easyadmin-bundle": "^4.6",
-    "grizzlyware/yubikey-php": "^1.0",
     "gumlet/php-image-resize": "^2.0",
     "karser/karser-recaptcha3-bundle": "^0.1.22",
     "konekt/pdf-invoice": "^1.12",
@@ -56,9 +55,7 @@
     "twig/extra-bundle": "^2.12|^3.0",
     "twig/intl-extra": "^3.4",
     "twig/twig": "^2.12|^3.5",
-    "vich/uploader-bundle": "^1.19",
-    "web-auth/webauthn-stimulus": "^4.6",
-    "web-auth/webauthn-symfony-bundle": "^4.6"
+    "vich/uploader-bundle": "^1.19"
   },
   "config": {
     "allow-plugins": {
@@ -91,7 +88,7 @@
     "symfony/polyfill-php80": "*"
   },
   "scripts": {
-    "deploy": "platform deploy",
+    "deploy": "git pull; composer install; php bin/console do:sc:up --force --complete; yarn encore production;",
     "server": "symfony server:start",
     "rector": "vendor/bin/rector process",
     "crud": "bin/console make:admin:crud",

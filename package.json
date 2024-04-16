@@ -6,7 +6,6 @@
     "@symfony/webpack-encore": "^4.3.0",
     "@testing-library/dom": "^9.3.1",
     "@types/jest": "^29.5.3",
-    "@web-auth/webauthn-stimulus": "file:vendor/web-auth/webauthn-stimulus/assets",
     "chart.js": "^3.4.1",
     "core-js": "^3.*",
     "fork-ts-checker-webpack-plugin": "7",

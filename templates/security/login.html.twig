@@ -22,11 +22,6 @@
             </div>
         {% endif %}
 
-        {{ form(form, { 'attr': {'class': enableWebAuthn ? 'webauthn-form' : ''}}) }}
-
-        <div style="padding: 20px" class="alert alert-danger inline webauthn-data"
-             data-callback-url="{{ callbackUrl }}"
-             data-email-field="{{ emailField }}"
-        ></div>
+        {{ form(form) }}
     </div>
 {% endblock %}
