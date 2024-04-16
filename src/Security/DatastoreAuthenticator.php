@@ -18,7 +18,7 @@ use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPasspor
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class StoreAuthenticator extends AbstractAuthenticator
+class DatastoreAuthenticator extends AbstractAuthenticator
 {
     const SESSION_AUTH_KEY = 'token';
 
@@ -62,30 +62,38 @@ class StoreAuthenticator extends AbstractAuthenticator
         );
 
         $statusCode = $response->getStatusCode();
-        /** @var {string response, string item} $content */
-        $content = $response->toArray();
 
-        if ($content['item']) {
-            /*$user = $this->userRepository->findOneBy(
-                ['email' => $content['item']['email']]
-            );*/
+        if ($statusCode === 200) {
 
-            $user = new User(1);
-            $user->setEmail($content['item']['email']);
-            $user->setUsername($content['item']['username']);
-            $user->setRoles(['ROLE_ADMIN']);
+            /** @var {string response, string item} $content */
+            $content = $response->toArray();
 
-            return new SelfValidatingPassport(
-                new UserBadge(
-                    $user->getEmail(),
-                    function () use ($user) {
-                        return $user;
-                    }
-                )
-            );
+            if ($content['item']) {
+                /*$user = $this->userRepository->findOneBy(
+                    ['email' => $content['item']['email']]
+                );*/
+
+                $user = new User(1);
+                $user->setEmail($content['item']['email']);
+                $user->setUsername($content['item']['username']);
+                $user->setRoles(['ROLE_ADMIN']);
+
+                return new SelfValidatingPassport(
+                    new UserBadge(
+                        $user->getEmail(),
+                        function () use ($user) {
+                            return $user;
+                        }
+                    )
+                );
+            }
         }
 
-        throw new CustomUserMessageAuthenticationException('No API token provided');
+        throw new CustomUserMessageAuthenticationException(
+            'No API token provided',
+            [],
+            $statusCode
+        );
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
@@ -96,13 +104,25 @@ class StoreAuthenticator extends AbstractAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        $callback = $this->router->generate(
-            'logged',
-            [], UrlGeneratorInterface::ABSOLUTE_URL
-        );
+        if ($exception->getCode() === 200) {
+            $request->getSession()->set(self::SESSION_AUTH_KEY, '');
+            $callback = $this->router->generate(
+                'logged',
+                [], UrlGeneratorInterface::ABSOLUTE_URL
+            );
+
+            return new RedirectResponse(
+                "{$this->storeBaseUrl}/login?callback={$callback}"
+            );
+        }
 
         return new RedirectResponse(
-            "{$this->storeBaseUrl}/login?callback={$callback}"
+            $this->router->generate(
+                'app_index',
+                [
+                    'error' => "Unauthorized project"
+                ], UrlGeneratorInterface::ABSOLUTE_URL
+            ),
         );
     }
 }

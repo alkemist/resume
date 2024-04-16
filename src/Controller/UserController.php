@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Security\StoreAuthenticator;
+use App\Security\DatastoreAuthenticator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -55,7 +55,7 @@ class UserController extends AbstractController
     public function logged(Request $request)
     {
         $token = $request->query->get('code');
-        $request->getSession()->set(StoreAuthenticator::SESSION_AUTH_KEY, $token);
+        $request->getSession()->set(DatastoreAuthenticator::SESSION_AUTH_KEY, $token);
         return $this->redirectToRoute('admin_dashboard');
     }
 }

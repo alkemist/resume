@@ -86,6 +86,11 @@
                         <a class="close" href="{{ url('app_index') }}">&times;</a>
                         {{ 'Message sended' | trans }}
                     </div>
+                {% elseif error %}
+                    <div id="message" class="hidden-print">
+                        <a class="close" href="{{ url('app_index') }}">&times;</a>
+                        {{ error }}
+                    </div>
                 {% elseif attributes['message'] is defined and attributes['message'].value and not format %}
                     <div id="message" class="hidden-print">
                         <button class="close" onclick="document.getElementById('message').remove()">&times;</button>

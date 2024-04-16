@@ -23,7 +23,7 @@ security:
       pattern: ^/
       #provider: password
       custom_authenticators:
-        - App\Security\StoreAuthenticator
+        - App\Security\DatastoreAuthenticator
       #      form_login:
       #        login_path: login
       #        check_path: login

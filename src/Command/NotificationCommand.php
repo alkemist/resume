@@ -59,7 +59,7 @@ class NotificationCommand extends Command
 
         if (count($notifications) > 0) {
             $email = (new Email())
-                ->from('Jérémy Achain <notifications@jeremy.achain.dev>')
+                ->from('Jaden Achain <notifications@jaden-achain.dev>')
                 ->to($this->params->get('MAILER_FROM'))
                 ->subject(
                     $this->params->get('MAILER_SUBJECT') . ' ' .

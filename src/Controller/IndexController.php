@@ -33,12 +33,15 @@ class IndexController extends AbstractController
         ProjectRepository   $projectRepository,
         LinkRepository      $linkRepository, MailerInterface $mailer, TranslatorInterface $translator
     ): Response {
+        $error = $request->query->get('error');
+
         $form = $this->createForm(ContactFormType::class);
         $form->handleRequest($request);
         $format = $request->query->get('format');
         $all = $request->query->get('all');
         $experiencesFilter = $all ? [] : ['onHomepage' => true];
         $data = [
+            'error'               => $error,
             'attributes'          => $attributeRepository->findAllIndexedBy('slug', false),
             'attributes_listable' => $attributeRepository->findAllIndexedBy('slug', true),
             'skills'              => $skillRepository->findBy(['onHomepage' => true], ['level' => 'DESC']),
