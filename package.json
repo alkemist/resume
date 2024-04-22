@@ -18,6 +18,7 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
+    "deploy": "git pull; composer install; php bin/console do:sc:up --force --complete; php bin/console importmap:install; php bin/console asset-map:compile;",
     "start": "symfony server:start",
     "dev-server": "encore dev-server",
     "dev": "encore dev",

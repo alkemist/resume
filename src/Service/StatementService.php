@@ -30,11 +30,6 @@ class StatementService
     ) {
     }
 
-    public function get(Statement $statement): bool|string
-    {
-        return $this->statementDirectory . $statement->getFilename();
-    }
-
     /**
      * @throws NonUniqueResultException
      * @throws Exception
@@ -59,10 +54,21 @@ class StatementService
 
         foreach ($lines as $index => $line) {
             if ($extractOperations && $index > $extractOperations) {
-                if (str_starts_with($line, "Date\tDate valeur\tOpération\tDébit EUROS\tCrédit EUROS\t")) {
+                if (str_contains($line, "Débit EUROS") && str_contains($line, "Crédit EUROS")) {
                     $extractOperations = false;
                 } else {
                     $operation = explode("\t", $line);
+                    $date = '';
+
+                    if (count($operation) === 2) {
+                        $operation = [
+                            substr($operation[0], 0, 10),
+                            substr($operation[0], 10, 10),
+                            substr($operation[0], 20),
+                            $operation[1],
+                        ];
+                    }
+
                     if (preg_match('#\d{2}/\d{2}/\d{4}#', $operation[0])) {
                         $date = DateTime::createFromFormat('d/m/Y', $operation[0]);
 
@@ -142,7 +148,9 @@ class StatementService
             $history[] = $log;
 
             if ($isPositiv) {
-                $logPositives[] = $name . ' / Filter id : ' . $filterId. ' / Daté du ' . $date->format('d/m/Y') . ' / ' . $amount . ' €';
+                $logPositives[] = $name . ' / Filter id : ' . $filterId . ' / Daté du ' . $date->format(
+                        'd/m/Y'
+                    ) . ' / ' . $amount . ' €';
             } else {
                 $logNegatives[] = $name . ' / Daté du ' . $date->format('d/m/Y') . ' / ' . $amount . ' €';
             }
@@ -190,6 +198,11 @@ class StatementService
 
     }
 
+    public function get(Statement $statement): bool|string
+    {
+        return $this->statementDirectory . $statement->getFilename();
+    }
+
     public function analyseOperation(Operation $operation, array $filters): void
     {
         if (
@@ -217,7 +230,7 @@ class StatementService
         sort($years);
 
         $viewData = [
-            'years' => $years,
+            'years'      => $years,
             'activeYear' => $year
         ];
         $savingAmounts = $this->statementRepository->getSavingAmounts($year);
@@ -229,12 +242,12 @@ class StatementService
         }
         $chartSavingAmounts = $this->chartBuilder->createChart(Chart::TYPE_LINE);
         $chartSavingAmounts->setData([
-                                         'labels' => $labels,
+                                         'labels'   => $labels,
                                          'datasets' => [[
-                                                            'label' => 'Livret Bleu',
-                                                            'borderColor' => 'rgba(96, 165, 250, 0.6)',
+                                                            'label'           => 'Livret Bleu',
+                                                            'borderColor'     => 'rgba(96, 165, 250, 0.6)',
                                                             'backgroundColor' => 'rgba(96, 165, 250, 0.6)',
-                                                            'data' => $values
+                                                            'data'            => $values
                                                         ]]
                                      ]);
         $viewData['chartSavingAmounts'] = $chartSavingAmounts;

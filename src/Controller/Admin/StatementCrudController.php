@@ -42,16 +42,14 @@ class StatementCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('Statement')
             ->setEntityLabelInPlural('Statements')
             ->setDefaultSort(['date' => 'DESC'])
-            ->setSearchFields(['date'])
-            ;
+            ->setSearchFields(['date']);
     }
 
     public function configureActions(Actions $actions): Actions
     {
         $ocrAction = Action::new('ocr', 'Ocr', 'fa fa-eye')
             ->linkToCrudAction('ocrAction')
-            ->displayIf(fn(Statement $statement) =>
-                $statement->getOperationsCount() == 0 ||
+            ->displayIf(fn(Statement $statement) => $statement->getOperationsCount() == 0 ||
                 $statement->getStartAmount() == null ||
                 $statement->getEndAmount() == null ||
                 $statement->getGapAmount() == null ||
@@ -109,6 +107,31 @@ class StatementCrudController extends AbstractCrudController
     /**
      * @throws NonUniqueResultException
      */
+    private function extractWithMessage(Statement $entityInstance, bool $throwError)
+    {
+        $this->statementService->extractOperations($entityInstance, $throwError);
+        $operationCount = $entityInstance->getOperationsCount();
+        $entityInstance->setTranslator($this->translator);
+
+        if ($operationCount === 0) {
+            $this->flashbagService->send(
+                'statement_analyzed_error',
+                $entityInstance,
+                [],
+                'danger'
+            );
+        } else {
+            $this->flashbagService->send(
+                'statement_analyzed_success',
+                $entityInstance,
+                ['%operationsCount%' => $operationCount]
+            );
+        }
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     */
     public function downloadAction(AdminContext $context): Response
     {
         /** @var Statement $declaration */
@@ -148,31 +171,6 @@ class StatementCrudController extends AbstractCrudController
 
         if ($entityInstance->getOperationsCount() == 0) {
             $this->extractWithMessage($entityInstance, false);
-        }
-    }
-
-    /**
-     * @throws NonUniqueResultException
-     */
-    private function extractWithMessage(Statement $entityInstance, bool $throwError)
-    {
-        $this->statementService->extractOperations($entityInstance, $throwError);
-        $operationCount = $entityInstance->getOperationsCount();
-        $entityInstance->setTranslator($this->translator);
-
-        if ($operationCount === 0) {
-            $this->flashbagService->send(
-                'statement_analyzed_error',
-                $entityInstance,
-                [],
-                'danger'
-            );
-        } else {
-            $this->flashbagService->send(
-                'statement_analyzed_success',
-                $entityInstance,
-                ['%operationsCount%' => $operationCount]
-            );
         }
     }
 }
