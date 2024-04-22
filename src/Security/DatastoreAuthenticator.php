@@ -11,7 +11,10 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
@@ -23,10 +26,12 @@ class DatastoreAuthenticator extends AbstractAuthenticator
     const SESSION_AUTH_KEY = 'token';
 
     public function __construct(
-        private readonly HttpClientInterface   $client,
-        private readonly UrlGeneratorInterface $router,
-        private readonly UserRepository        $userRepository,
-        readonly string                        $storeBaseUrl
+        private readonly HttpClientInterface       $client,
+        private readonly UrlGeneratorInterface     $router,
+        private readonly UserRepository            $userRepository,
+        private readonly CsrfTokenManagerInterface $csrfTokenManager,
+        private readonly TokenGeneratorInterface   $tokenGenerator,
+        readonly string                            $storeBaseUrl
     ) {
 
     }
@@ -84,7 +89,13 @@ class DatastoreAuthenticator extends AbstractAuthenticator
                         function () use ($user) {
                             return $user;
                         }
-                    )
+                    ),
+                    [
+                        new CsrfTokenBadge(
+                            'authenticate',
+                            $this->csrfTokenManager->refreshToken('authenticate')
+                        )
+                    ]
                 );
             }
         }
@@ -115,6 +126,9 @@ class DatastoreAuthenticator extends AbstractAuthenticator
                 "{$this->storeBaseUrl}/login?callback={$callback}"
             );
         }
+
+        dump($exception);
+        die;
 
         return new RedirectResponse(
             $this->router->generate(
