@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Statement;
+use App\Helper\EasyAdminTools;
 use App\Service\FlashbagService;
 use App\Service\StatementService;
 use DateTime;
@@ -16,6 +17,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -24,6 +26,8 @@ use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class StatementCrudController extends AbstractCrudController
 {
+    use EasyAdminTools;
+
     public function __construct(
         private readonly StatementService    $statementService,
         private readonly TranslatorInterface $translator,
@@ -93,7 +97,7 @@ class StatementCrudController extends AbstractCrudController
     /**
      * @throws NonUniqueResultException
      */
-    public function ocrAction(AdminContext $context): RedirectResponse
+    public function ocrAction(AdminUrlGenerator $adminUrlGenerator, AdminContext $context): RedirectResponse
     {
         $declaration = null;
         /** @var Statement $declaration */
@@ -101,7 +105,7 @@ class StatementCrudController extends AbstractCrudController
 
         $this->extractWithMessage($statement, true);
 
-        return $this->redirect($context->getReferrer());
+        return $this->redirect($this->getReferer($adminUrlGenerator, $context));
     }
 
     /**

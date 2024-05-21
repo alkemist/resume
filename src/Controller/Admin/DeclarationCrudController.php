@@ -8,6 +8,7 @@ use App\Enum\DeclarationTypeEnum;
 use App\Filter\EnumFilter;
 use App\Form\Filter\DeclarationStatusFilterType;
 use App\Form\Filter\DeclarationTypeFilterType;
+use App\Helper\EasyAdminTools;
 use App\Service\DeclarationService;
 use App\Service\FlashbagService;
 use DateTime;
@@ -25,11 +26,14 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\PercentField;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class DeclarationCrudController extends AbstractCrudController
 {
+    use EasyAdminTools;
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly DeclarationService     $declarationService,
@@ -123,7 +127,7 @@ class DeclarationCrudController extends AbstractCrudController
         }
     }
 
-    public function validateAction(AdminContext $context): RedirectResponse
+    public function validateAction(AdminUrlGenerator $adminUrlGenerator, AdminContext $context): RedirectResponse
     {
         /** @var Declaration $declaration */
         $declaration = $context->getEntity()->getInstance();
@@ -134,10 +138,10 @@ class DeclarationCrudController extends AbstractCrudController
         $this->entityManager->flush();
 
         $this->flashbagService->send('mark_as_payed', $declaration);
-        return $this->redirect($context->getReferrer());
+        return $this->redirect($this->getReferer($adminUrlGenerator, $context));
     }
 
-    public function calculateAction(AdminContext $context): RedirectResponse
+    public function calculateAction(AdminUrlGenerator $adminUrlGenerator, AdminContext $context): RedirectResponse
     {
         /** @var Declaration $declaration */
         $declaration = $context->getEntity()->getInstance();
@@ -145,7 +149,7 @@ class DeclarationCrudController extends AbstractCrudController
         $this->declarationService->calculate($declaration);
 
         $this->flashbagService->send('declaration_calculated', $declaration);
-        return $this->redirect($context->getReferrer());
+        return $this->redirect($this->getReferer($adminUrlGenerator, $context));
     }
 
     /**
