@@ -1357,9 +1357,6 @@
   resolved "https://registry.yarnpkg.com/@web-auth/webauthn-helper/-/webauthn-helper-0.0.13.tgz#2e9e6f421a3238bee233fe97c6801a6c6354cf7b"
   integrity sha512-yEXWTiZSGFYnCVEwOqWgZFrQ4MiW9WGAiAvdRD6NQRlp7sr39THZiGIix/x3y3zmnsUsZZ0iXQA8zG/gPESwzQ==
 
-"@web-auth/webauthn-stimulus@file:vendor/web-auth/webauthn-stimulus/assets":
-  version "1.0.0"
-
 "@webassemblyjs/ast@1.11.6", "@webassemblyjs/ast@^1.11.5":
   version "1.11.6"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.11.6.tgz#db046555d3c413f8966ca50a95176a0e2c642e24"

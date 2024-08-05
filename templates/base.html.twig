@@ -20,6 +20,7 @@
     <meta property="og:description" content="{{ block('description') }}"/>
     <link rel="author" href="humans.txt"/>
     {% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
         {{ encore_entry_link_tags('app') }}
     {% endblock %}
 </head>
@@ -27,6 +28,7 @@
 {% block body %}{% endblock %}
 {% block foot %}{% endblock %}
 {% block javascripts %}
+            {{ importmap() }}
     {{ encore_entry_script_tags('app') }}
 {% endblock %}
 </body>

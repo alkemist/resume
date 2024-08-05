@@ -26,8 +26,6 @@ Encore
     .addEntry('app', './assets/app.js')
     .addEntry('app-chartjs-plugins', './assets/app-chartjs-plugins.js')
     .addEntry('bootstrap', './assets/bootstrap.js')
-    .addEntry('js/login', './assets/js/login.ts')
-    .addEntry('js/register', './assets/js/register.ts')
 
     .addStyleEntry('css/admin', './assets/css/admin.scss')
     .addStyleEntry('css/login', './assets/css/login.scss')
