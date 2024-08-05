@@ -87,9 +87,11 @@ class StatementService
             } elseif (strpos($line, 'SOLDE ') > -1) {
                 $lineArray = explode("\t", $line);
 
-                $amount = StringHelper::extractAmount(
-                    str_starts_with($line, 'SOLDE ') ? $lineArray[1] : $lineArray[2]
-                );
+                foreach ($lineArray as $index => $line) {
+                    if (str_starts_with($line, 'SOLDE ') && $index < count($lineArray) - 1) {
+                        $amount = StringHelper::extractAmount($lineArray[$index + 1]);
+                    }
+                }
 
                 if ($extractOtherAccounts) {
                     if ($livretBleuStart !== null) {
