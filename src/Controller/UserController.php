@@ -51,8 +51,8 @@ class UserController extends AbstractController
 
     }
 
-    #[Route(path: '/logged', name: 'logged')]
-    public function logged(Request $request)
+    #[Route(path: '/authorize/google', name: 'authorize')]
+    public function authorize(Request $request)
     {
         $token = $request->query->get('code');
         $request->getSession()->set(DatastoreAuthenticator::SESSION_AUTH_KEY, $token);

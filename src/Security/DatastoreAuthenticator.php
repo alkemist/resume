@@ -118,17 +118,14 @@ class DatastoreAuthenticator extends AbstractAuthenticator
         if ($exception->getCode() === 200) {
             $request->getSession()->set(self::SESSION_AUTH_KEY, '');
             $callback = $this->router->generate(
-                'logged',
+                'authorize',
                 [], UrlGeneratorInterface::ABSOLUTE_URL
             );
 
             return new RedirectResponse(
-                "{$this->storeBaseUrl}/login?callback={$callback}"
+                "{$this->storeBaseUrl}/login/resume?callback={$callback}"
             );
         }
-
-        dump($exception);
-        die;
 
         return new RedirectResponse(
             $this->router->generate(

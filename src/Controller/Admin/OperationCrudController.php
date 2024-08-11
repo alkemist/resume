@@ -44,7 +44,7 @@ class OperationCrudController extends AbstractCrudController
             ->setEntityLabelInPlural('Operations')
             ->setDefaultSort(['type' => 'DESC'])
             ->setPaginatorPageSize(40)
-            ->setSearchFields(['date', 'type', 'label', 'target', 'location', 'amount']);
+            ->setSearchFields(['date', 'type', 'label', 'name', 'target', 'location', 'amount']);
     }
 
     public function configureActions(Actions $actions): Actions

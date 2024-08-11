@@ -82,7 +82,9 @@ class StatementService
                     }
                 }
             } elseif (str_starts_with($line, 'Compte Courant JEUNE ACTIF N°')
-                || str_starts_with($line, 'C/C EUROCOMPTE DUO CONFORT N°')) {
+                || str_starts_with($line, 'C/C EUROCOMPTE DUO CONFORT N°')
+                || str_starts_with($line, 'C/C EUROCOMPTE CONFORT N°')
+            ) {
                 $extractOperations = $index + 1;
             } elseif (strpos($line, 'SOLDE ') > -1) {
                 $lineArray = explode("\t", $line);
