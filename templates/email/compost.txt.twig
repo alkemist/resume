@@ -1,0 +1,27 @@
+Bonjour,
+Ceci est un message automatique.
+
+{% if annulation %}
+    La permanence d'aujourd'hui "{{ date }}" a été annulé pour raison de "{{ motif_annulation }}"
+{% else %}
+    {% if volontaire_ok %}
+        Il manque {{ need_count }} personne pour accompagner {{ volontaire_ok }} à la prochaine permanence du {{ date }}
+    {% else %}
+        Personne ne s'est inscrit pour la permanence du {{ date }}
+    {% endif %}
+{% endif %}
+
+{% if notes %}
+    Notes : {{ notes }}
+{% endif %}
+
+Le lien pour s'ajouter sur les permanences : {{ url }}
+
+Quelques règles à respecter sur le remplissage de ce tableau :
+- La colonne "Date" doit être au format jour/mois/année
+- La colonne "Motif si annulation" doit être renseigné uniquement si la permanence est annulé
+(elle permet de ne pas envoyer de mail pour cette date, même s'il manque des personnes, et permet de prévenir le jour J que la permanence est annulé)
+- La colonne "Notes" permet de renseigner des informations supplémentaire à transmettre dans ce mail
+
+--------------------------------------------------------------------------
+Jaden ACHAIN
