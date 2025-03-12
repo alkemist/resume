@@ -83,7 +83,7 @@ class CompostCommand extends Command
                         return trim($val);
                     }, str_getcsv($row));
 
-                    $date_str = $row_csv[0];
+                    $date_str = $row_csv[1];
 
                     if ($date_str && preg_match('#\d{1,2}/\d{1,2}/\d{2,4}#', $date_str)) {
                         $date_arr = explode('/', $date_str);
@@ -92,9 +92,9 @@ class CompostCommand extends Command
                         $diffDays = intval($interval->format('%R%a'));
 
                         if ($diffDays <= $diffDaysMax && $diffDays >= 0) {
-                            $volontaire1 = $row_csv[2];
-                            $volontaire2 = $row_csv[3];
-                            $motifAnnulation = $row_csv[4];
+                            $volontaire1 = $row_csv[3];
+                            $volontaire2 = $row_csv[4];
+                            $motifAnnulation = $row_csv[5];
                             $annulation = $diffDays === 0 && $motifAnnulation;
 
                             if (
@@ -108,7 +108,7 @@ class CompostCommand extends Command
                                     'volontaire_ok' => $volontaire1 ? $volontaire1 : $volontaire2,
                                     'need_count' => !$volontaire1 && !$volontaire2 ? 2 : 1,
                                     'motif_annulation' => $motifAnnulation,
-                                    'notes' => $row_csv[5],
+                                    'notes' => $row_csv[6],
                                     'url' => $url_link,
                                 ];
                             }
