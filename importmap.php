@@ -21,12 +21,12 @@ return [
         'path' => '@symfony/stimulus-bundle/loader.js',
     ],
     '@hotwired/stimulus' => [
-        'url' => 'https://cdn.jsdelivr.net/npm/@hotwired/stimulus@3.2.2/+esm',
+        'path' => 'https://cdn.jsdelivr.net/npm/@hotwired/stimulus@3.2.2/+esm',
     ],
     'chart.js/auto' => [
-        'url' => 'https://cdn.jsdelivr.net/npm/chart.js@4.4.3/auto/+esm',
+        'path' => 'https://cdn.jsdelivr.net/npm/chart.js@4.4.3/auto/+esm',
     ],
     'chart.js' => [
-        'url' => 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/+esm',
+        'path' => 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/+esm',
     ],
 ];
