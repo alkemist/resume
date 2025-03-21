@@ -37,8 +37,8 @@ class EducationCrudController extends AbstractCrudController
             yield TextField::new('details')->setColumns(2);
         }
 
-        yield TextField::new('location')->setColumns(2);
-        yield NumberField::new('level')->setColumns(1);
+        yield TextField::new('location')->setRequired(false)->setColumns(2);
+        yield NumberField::new('level')->setRequired(false)->setColumns(1);
 
         yield FormField::addPanel('Dates');
         yield DateField::new('dateBegin')->setColumns(2);

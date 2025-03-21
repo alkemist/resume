@@ -88,7 +88,7 @@ class Education implements Stringable
         return $this->location;
     }
 
-    public function setLocation(string $location): self
+    public function setLocation(?string $location = null): self
     {
         $this->location = $location;
 
@@ -100,7 +100,7 @@ class Education implements Stringable
         return $this->level;
     }
 
-    public function setLevel(int $level): self
+    public function setLevel(?int $level = null): self
     {
         $this->level = $level;
 
