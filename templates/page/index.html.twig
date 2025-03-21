@@ -262,14 +262,16 @@
                         </div>
 
                         {% if format == 'doc' %}
-                            <b><span>Bac +{{ education.level }}</span> : <span>{{ education.name }}</span></b>
+                            <b>{% if education.level %}<span>Bac +{{ education.level }}</span> : {% if format == 'doc' %}
+                                <span>{{ education.name }}</span>
+                            </b>
                         {% else %}
                             <h4 class="title"><span>Bac +{{ education.level }}</span> :
                                 <span>{{ education.name }}</span></h4>
                         {% endif %}
                         {% if education.details %}
                             <div>{{ education.details }}</div>
-                        {% endif %}
+                        {% if format == 'doc' %}
                         {% if education.school %}
                             <div>{{ education.school }}</div>
                         {% endif %}
