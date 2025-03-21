@@ -1,6 +1,9 @@
 vich_uploader:
     db_driver: orm
 
+    metadata:
+        type: attribute
+
     mappings:
         statements:
             uri_prefix: '%env(DIRECTORY_STATEMENT)%'

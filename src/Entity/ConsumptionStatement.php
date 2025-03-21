@@ -11,11 +11,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
-/**
- * @Vich\Uploadable
- */
 #[UniqueEntity(fields: ['filename'], message: 'ConsumptionStatement already exists')]
 #[ORM\Entity(repositoryClass: ConsumptionStatementRepository::class)]
+#[Vich\Uploadable]
 class ConsumptionStatement implements Stringable
 {
     #[ORM\Id]
@@ -35,9 +33,7 @@ class ConsumptionStatement implements Stringable
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $updatedAt = null;
 
-    /**
-     * @Vich\UploadableField(mapping="consumptions", fileNameProperty="filename")
-     */
+    #[Vich\UploadableField(mapping: 'consumptions', fileNameProperty: 'filename')]
     private ?File $file = null;
 
     public function __toString(): string

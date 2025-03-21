@@ -12,11 +12,10 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
-/**
- * @Vich\Uploadable
- */
+
 #[UniqueEntity(fields: ['filename'], message: 'Operation already exists')]
 #[ORM\Entity(repositoryClass: StatementRepository::class)]
+#[Vich\Uploadable]
 class Statement implements \Stringable
 {
     #[ORM\Id]
@@ -33,9 +32,7 @@ class Statement implements \Stringable
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTimeInterface $updatedAt = null;
 
-    /**
-     * @Vich\UploadableField(mapping="statements", fileNameProperty="filename")
-     */
+    #[Vich\UploadableField(mapping: 'statements', fileNameProperty: 'filename')]
     private ?File $file = null;
 
     #[ORM\Column(type: Types::INTEGER, nullable: true)]

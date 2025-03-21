@@ -25,9 +25,9 @@ doctrine:
         soundex: App\DQL\SoundexFunction
         dateFormat: App\DQL\DateFormatFunction
         toChar: App\DQL\ToCharFunction
-    controller_resolver:
-      enabled: false
-      auto_mapping: false
+    #controller_resolver:
+    #  enabled: false
+    #  auto_mapping: false
 
 when@test:
     doctrine:
