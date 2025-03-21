@@ -11,7 +11,7 @@
     "doctrine/annotations": "^1.13",
     "doctrine/doctrine-bundle": "^2.8",
     "doctrine/orm": "^2.12",
-    "easycorp/easyadmin-bundle": "^4.6",
+    "easycorp/easyadmin-bundle": "^4.20",
     "gumlet/php-image-resize": "^2.0",
     "karser/karser-recaptcha3-bundle": "^0.1.22",
     "konekt/pdf-invoice": "^1.12",
@@ -48,16 +48,18 @@
     "symfony/stimulus-bundle": "^2.10",
     "symfony/string": "6.3.*",
     "symfony/translation": "6.3.*",
+    "symfony/twig-bridge": "6.3.*",
     "symfony/twig-bundle": "6.3.*",
     "symfony/uid": "6.3.*",
     "symfony/ux-chartjs": "^2.10",
+    "symfony/ux-twig-component": "^2.23",
     "symfony/validator": "6.3.*",
     "symfony/web-link": "6.3.*",
     "symfony/webpack-encore-bundle": "^2.1",
     "symfony/yaml": "*",
     "twig/extra-bundle": "^2.12|^3.0",
-    "twig/intl-extra": "^3.4",
-    "twig/twig": "^2.12|^3.5",
+    "twig/intl-extra": "^3.8",
+    "twig/twig": "^3.20",
     "vich/uploader-bundle": "*"
   },
   "config": {
@@ -113,7 +115,7 @@
   "extra": {
     "symfony": {
       "allow-contrib": false,
-      "require": "6.3.*"
+      "require": "7.2.*"
     }
   },
   "require-dev": {
