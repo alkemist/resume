@@ -34,12 +34,12 @@ class ProjectCrudController extends AbstractCrudController
         yield UrlField::new('websiteUrl')->setColumns(5);
         yield UrlField::new('sourceUrl')->setColumns(5);
 
-        yield TextareaField::new('description')->setColumns(12);
 
         if (Crud::PAGE_EDIT === $pageName || Crud::PAGE_NEW === $pageName || Crud::PAGE_DETAIL === $pageName) {
-            yield TextField::new('description')->setColumns(2);
-            yield AssociationField::new('skills')->setColumns(4);
+            yield TextareaField::new('description')->setColumns(9);
+            yield AssociationField::new('skills')->setColumns(3);
         } else {
+            yield TextareaField::new('description')->setColumns(12);
             yield ArrayField::new('skills');
         }
     }
