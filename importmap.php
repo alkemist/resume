@@ -16,7 +16,6 @@
 return [
     'app' => [
         'path' => 'app.js',
-        'preload' => true,
     ],
     '@symfony/stimulus-bundle' => [
         'path' => '@symfony/stimulus-bundle/loader.js',
