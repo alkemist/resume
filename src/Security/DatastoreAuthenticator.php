@@ -115,7 +115,7 @@ class DatastoreAuthenticator extends AbstractAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        if ($exception->getCode() === 200) {
+        if ($exception->getCode() === 200 || $exception->getCode() === 302) {
             $request->getSession()->set(self::SESSION_AUTH_KEY, '');
             $callback = $this->router->generate(
                 'authorize',
