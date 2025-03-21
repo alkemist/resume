@@ -21,12 +21,15 @@ return [
         'path' => '@symfony/stimulus-bundle/loader.js',
     ],
     '@hotwired/stimulus' => [
-        'path' => 'https://cdn.jsdelivr.net/npm/@hotwired/stimulus@3.2.2/+esm',
+        //'url' => 'https://cdn.jsdelivr.net/npm/@hotwired/stimulus@3.2.2/+esm',
+        'version' => '3.2.2'
     ],
     'chart.js/auto' => [
-        'path' => 'https://cdn.jsdelivr.net/npm/chart.js@4.4.3/auto/+esm',
+        //'url' => 'https://cdn.jsdelivr.net/npm/chart.js@4.4.3/auto/+esm',
+        'version' => '4.4.3'
     ],
     'chart.js' => [
-        'path' => 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/+esm',
+        //'url' => 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/+esm',
+        'version' => '3.9.1'
     ],
 ];
