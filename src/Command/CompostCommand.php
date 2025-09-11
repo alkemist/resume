@@ -121,6 +121,7 @@ class CompostCommand extends Command
                 if (count($mails_address) > 0) {
                     $email = (new Email())
                         ->from($this->params->get('MAILER_FROM'))
+                        ->replyTo('jaden.achain+compost@gmail.com')
                         ->to($mail_to)
                         ->bcc(...$mails_address)
                         ->subject(
