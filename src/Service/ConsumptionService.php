@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Consumption;
 use App\Entity\ConsumptionMonth;
 use App\Entity\ConsumptionStatement;
+use App\Helper\DateHelper;
 use App\Helper\StringHelper;
 use App\Repository\ConsumptionMonthRepository;
 use App\Repository\ConsumptionRepository;
@@ -33,34 +34,43 @@ class ConsumptionService
     public function extractConsumptions(ConsumptionStatement $consumptionStatement): int
     {
         $filePath = $this->get($consumptionStatement);
-        $matches = [];
+        $dateStart = '';
+        $dateEnd = '';
         $count = 0;
-
-        preg_match('/Enedis_Conso_Jour_(\d{8})-(\d{8})_\d+/', $consumptionStatement->getFilename(), $matches);
-        list(, $dateStart, $dateEnd) = $matches;
-
-        $consumptionStatement->setStartDate(new DateTime($dateStart));
-        $consumptionStatement->setEndDate(new DateTime($dateEnd));
 
         $rows = [];
         if (($handle = fopen($filePath, "r")) !== FALSE) {
             $i = 1;
             while (($row = fgetcsv($handle, 1000, ";")) !== FALSE) {
-                if ($i >= 4 && count($row) === 17) {
-                    list($dateStr, , $lowHourStr, $fullHourStr, $weekendHourStr) = $row;
+                if ($i > 4) {
+                    if(count($row) >= 4) {
+                        list($dateStr, , $fullHourStr, $lowHourStr) = $row;
+                        $dateStr = DateHelper::frToEn($dateStr);
 
-                    if ($lowHourStr && $fullHourStr) {
-                        $rows[] = [
-                            new DateTime($dateStr),
-                            intval($lowHourStr),
-                            intval($fullHourStr),
-                            $weekendHourStr ? intval($weekendHourStr) : 0
-                        ];
+                        if ($i == 5) {
+                            $dateEnd = $dateStr;
+                        }
+
+                        if ($lowHourStr && $fullHourStr) {
+                            $rows[] = [
+                                new DateTime($dateStr),
+                                intval($lowHourStr) * 1000, # En Wh
+                                intval($fullHourStr) * 1000, # En Wh
+                                0
+                            ];
+                        }
                     }
                 }
                 $i++;
             }
+            $dateStart = $dateStr;
         }
+
+        // Plus vieux au plus récent
+        $rows = array_reverse($rows);
+
+        $consumptionStatement->setStartDate(new DateTime($dateStart));
+        $consumptionStatement->setEndDate(new DateTime($dateEnd));
 
         $consumptionMonthStore = new \Ds\Map();
 
